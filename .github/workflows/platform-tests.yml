@@ -9,6 +9,7 @@ on:
   pull_request:
     paths:
       - 'platform-prototype/backend/**'
+      - 'platform-prototype/frontend/**'
       - '.github/workflows/platform-tests.yml'
 
 jobs:
