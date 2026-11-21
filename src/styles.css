@@ -67,3 +67,56 @@ body{font-family:'Onest',Arial,sans-serif}
 .architecture-section{background:linear-gradient(135deg,#f2eeec,#e9e2e0)}
 @media(max-width:900px){.section-pad{padding-top:110px;padding-bottom:110px}.intro-section:after,.architecture-section:after{left:7vw;right:7vw}}
 @media(max-width:640px){.site-header{height:66px}.wordmark{font-size:14px}.main-nav a,.header-link{font-size:11px}.eyebrow,.section-kicker{font-size:9px}.hero h1{font-size:clamp(51px,13vw,76px);font-weight:700}.hero-lead{font-size:13px}.hero-card{margin-top:20px;padding:10px 12px}.hero-card small{font-size:9px}.section-pad{padding-top:82px;padding-bottom:82px}.intro-layout h2,.section-heading h2{font-weight:700}.intro-text p,.about-grid>div>p{font-size:12px}.statement-line{font-size:8px}.method-node{font-size:8px;padding:9px 8px}.method-detail span,.method-caption{font-size:8px}.flow-item h3{font-size:16px}.flow-item p{font-size:11px}.about-aside small{font-size:10px}.platform-section>p{font-size:12px}.hero-bottom{font-size:7px}}
+
+
+/* TRACE expert-presentation refinement */
+:root{--pink:#e9bdc8;--bg:#080808}
+.site-header{height:84px}
+.wordmark{font-size:16px;letter-spacing:.17em}
+.wordmark-mark{border-radius:7px;background:#e9bdc811;font-weight:800}
+.wordmark sup{font-family:'Onest',sans-serif;font-size:8px;font-weight:800;letter-spacing:.1em}
+.main-nav a,.header-link{font-size:12px;font-weight:700}
+.eyebrow,.section-kicker{font-family:'Onest',sans-serif;font-size:11px;font-weight:800;letter-spacing:.09em}
+.hero h1{font-size:clamp(62px,7.5vw,112px);font-weight:800;line-height:.96;letter-spacing:-.08em}
+.hero h1 em,.intro-layout h2 em,.section-heading h2 em,.about-grid h2 em,.platform-section h2 em{font-family:'Onest',sans-serif;font-style:normal;font-weight:500}
+.hero-lead{font-size:15px;line-height:1.9;font-weight:500;color:#c6bec1}
+.button{font-size:12px;font-weight:800;border-radius:4px}
+.hero-index,.hero-bottom,.visual-tag,.coordinate,.method-caption,.method-detail span,.flow-item>b,.flow-item>span,.principle-note span,.about-aside span,.platform-status{font-family:'Onest',sans-serif;font-size:10px;font-weight:800;letter-spacing:.09em}
+.section-pad{padding-top:140px;padding-bottom:140px}
+.intro-layout h2,.section-heading h2,.about-grid h2,.platform-section h2{font-weight:800;letter-spacing:-.065em}
+.intro-text p,.about-grid>div>p{font-size:14px;line-height:1.9;font-weight:500}
+.statement-line{font-family:'Onest',sans-serif;font-size:11px;font-weight:800}
+.section-heading>p{font-size:13px;line-height:1.9;font-weight:500}
+.method-visual{height:610px;margin-top:55px;border:1px solid #ffffff20;border-radius:10px;overflow:hidden;background:radial-gradient(ellipse at 50% 47%,#70465342,transparent 49%),linear-gradient(135deg,#ffffff09,transparent 52%);box-shadow:inset 0 0 90px #0008}
+.method-orbit{width:470px;height:470px;border-color:#e9bdc844}
+.method-orbit:before{inset:42px;border-color:#ffffff20}
+.method-orbit:after{inset:-45px;border-color:#e9bdc81b}
+.method-center{width:168px;height:168px;border-radius:32px;background:linear-gradient(145deg,#24191e,#100d0f);border:1px solid #e9bdc899;box-shadow:0 0 90px #e9bdc826;transform:translate(-50%,-50%) rotate(-5deg)}
+.method-center span{font-size:27px;font-weight:800;letter-spacing:.14em}
+.method-center small{font-family:'Onest',sans-serif;font-size:10px;font-weight:800;letter-spacing:.1em}
+.method-node{border-radius:5px;background:#171315;border:1px solid #ffffff30;padding:15px 18px;font-family:'Onest',sans-serif;font-size:11px;font-weight:800;letter-spacing:.04em;box-shadow:0 12px 30px #0007;transition:all .25s}
+.method-node i{width:7px;height:7px;background:#9c8790}
+.method-node b{font-family:'Onest',sans-serif;font-size:10px;font-weight:800}
+.method-node.active{background:#2a1c22;border-color:#e9bdc8;color:#fff;box-shadow:0 0 30px #e9bdc822,0 12px 30px #0008}
+.method-node.active i{background:var(--pink);box-shadow:0 0 12px var(--pink)}
+.method-node:hover{transform:translateY(-4px);border-color:#e9bdc8}
+.node-0{left:calc(50% - 310px);top:16%}.node-1{right:calc(50% - 330px);top:25%}.node-2{right:calc(50% - 310px);bottom:18%}.node-3{left:calc(50% - 305px);bottom:15%}
+.node-4{top:5%}
+.method-detail{left:28px;bottom:24px;width:270px;padding-left:17px;gap:9px}
+.method-detail b{font-size:13px;font-weight:800}
+.method-detail p{font-size:12px;line-height:1.65;font-weight:500}
+.method-caption{font-size:9px;padding-top:16px}
+.flow-item h3{font-size:20px;font-weight:800;letter-spacing:-.035em}
+.flow-item p{font-size:13px;line-height:1.85;font-weight:500}
+.principle-note{border-radius:5px}
+.principle-note p{font-family:'Onest',sans-serif;font-size:21px;font-weight:600;letter-spacing:-.03em}
+.about-aside b{font-size:15px;font-weight:800}
+.about-aside small{font-size:11px;font-weight:500}
+.platform-section{background:linear-gradient(115deg,#1c1117,#100d0f 72%)}
+.platform-section>p{font-size:14px;line-height:1.9;font-weight:500}
+.site-footer{min-height:105px}
+.hero-card{border-radius:7px;background:linear-gradient(120deg,#ffffff12,#ffffff04)}
+.hero-card-mark{border-radius:7px}
+@media(max-width:900px){.section-pad{padding-top:110px;padding-bottom:110px}.method-visual{height:560px}.method-orbit{width:390px;height:390px}.node-0{left:4%}.node-1{right:4%}.node-2{right:3%}.node-3{left:4%}}
+@media(max-width:640px){.site-header{height:66px}.hero h1{font-size:clamp(53px,13.5vw,80px)}.hero-lead{font-size:13px}.section-pad{padding-top:82px;padding-bottom:82px}.intro-text p,.about-grid>div>p{font-size:12px}.statement-line{font-size:8px}.method-visual{height:520px;margin-top:32px}.method-orbit{width:280px;height:280px}.method-center{width:116px;height:116px;border-radius:22px}.method-center span{font-size:18px}.method-center small{font-size:8px}.method-node{font-size:8px;padding:10px 8px}.method-node b{display:none}.node-0{left:2%;top:18%}.node-1{right:2%;top:29%}.node-2{right:2%;bottom:28%}.node-3{left:2%;bottom:18%}.node-4{top:5%}.method-detail{left:15px;bottom:15px;width:205px}.method-detail p{font-size:10px}.method-caption{font-size:7px}.flow-item h3{font-size:16px}.flow-item p{font-size:11px}.principle-note p{font-size:18px}.platform-section>p{font-size:12px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
