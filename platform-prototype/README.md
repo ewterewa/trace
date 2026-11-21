@@ -1,4 +1,4 @@
-# TRACE Intelligence Platform — backend foundation
+# TRACE Intelligence Platform — prototype and backend foundation
 
 This directory is the **separate application prototype**. The public TRACE website remains a presentation of the concept; it is not the platform.
 
@@ -100,3 +100,14 @@ python -m unittest discover -s tests -v
 4. Add authentication, case-level authorization, upload scanning, encryption and retention/deletion policy before any real-data use.
 5. Add graph visualization and evidence-linked report export.
 6. Add a provider abstraction and controlled tool-calling for AI; keep deterministic operations authoritative.
+
+
+## Public interactive preview
+
+After the GitHub Pages deployment workflow completes, the static demonstration workspace is available at:
+
+https://ewterewa.github.io/trace/platform/
+
+This preview includes six public case-study summaries and 600 synthetic interface records (100 per case) to demonstrate evidence registers, reconstructed communications, link analysis, chronology and schematic geospatial views. Synthetic records are explicitly marked **RECONSTRUCTION / DEMO DATA** and are not authentic case evidence. Public historical facts remain separated from those records and link to their institutional sources.
+
+The public preview is static. It does not persist uploads, connect to the FastAPI database, or execute live AI inference. For the interactive backend prototype, launch the Codespaces environment described above. Do not expose the current MVP backend to the public internet or upload sensitive material.
