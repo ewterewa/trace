@@ -26,6 +26,17 @@ jobs:
         run: |
           mkdir -p dist/platform
           cp -R platform-prototype/demo-site/. dist/platform/
+      - name: Validate TRACE demo JavaScript
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          source = Path("platform-prototype/demo-site/index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script>(.*?)</script>", source, re.S)
+          assert scripts, "No inline application script found"
+          Path("/tmp/trace-demo.js").write_text("\\n".join(scripts), encoding="utf-8")
+          PY
+          node --check /tmp/trace-demo.js
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
