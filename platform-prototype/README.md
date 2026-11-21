@@ -36,6 +36,18 @@ FastAPI API
 
 The deterministic layer establishes what is present in the supplied material. TRACE AI explains the supplied results and proposes checks. It must not create evidence, silently enrich IPs with location, or treat a shared identifier as proof of shared identity.
 
+## Open in GitHub Codespaces (iPad / browser)
+
+You do not need a laptop or a local Python/Node installation.
+
+1. Open the repository: https://github.com/ewterewa/trace
+2. Tap **Code** → **Codespaces** → **Create codespace on main**.
+3. Wait for the environment to finish preparing. The dev container installs dependencies and starts the API and web workspace automatically.
+4. Open the forwarded **TRACE Platform** port (5173). If it does not open automatically, open the **Ports** panel and tap the globe icon next to port 5173.
+5. The API runs on port 8000. Keep both forwarded ports private.
+
+The current prototype is intended for synthetic demonstration data only. It is not yet a public production deployment and must not receive sensitive case evidence.
+
 ## Run locally
 
 Requirements: Python 3.11+
