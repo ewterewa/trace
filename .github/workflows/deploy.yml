@@ -18,8 +18,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
-      - run: npm run build
+      - name: Build presentation website
+        run: |
+          npm install
+          npm run build
+      - name: Add standalone TRACE platform demo
+        run: |
+          mkdir -p dist/platform
+          cp -R platform-prototype/demo-site/. dist/platform/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
