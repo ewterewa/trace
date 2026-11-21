@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "notice": "PUBLIC_CASE_STUDY. This catalogue summarizes publicly documented case histories. Any synthetic chats, device logs, IP records, screenshots, or illustrative scene images generated for interface testing must be labelled RECONSTRUCTION and must never be represented as original evidence.",
+  "cases": [
+    {
+      "id": "CASE-001",
+      "slug": "zodiac",
+      "title": "The Zodiac Killer",
+      "subtitle": "Serial correspondence, document examination and forensic comparison",
+      "years": "1968–1974",
+      "location": "Northern California, USA",
+      "status": "Unsolved",
+      "focus": [
+        "letters and ciphers",
+        "handwriting and document examination",
+        "latent fingerprints",
+        "event chronology"
+      ],
+      "documented": [
+        "The FBI maintained an investigative file and performed latent fingerprint examinations connected with the Zodiac investigation.",
+        "An FBI laboratory report dated 28 October 1970 discusses latent fingerprints and impressions submitted for comparison.",
+        "The FBI Vault contains a multi-part public release of Zodiac case records."
+      ],
+      "sources": [
+        {
+          "label": "FBI Vault — The Zodiac Killer, Part 01",
+          "url": "https://vault.fbi.gov/The%20Zodiac%20Killer/The%20Zodiac%20Killer%20Part%2001/view"
+        },
+        {
+          "label": "FBI Vault — Latent fingerprint report, Part 04",
+          "url": "https://vault.fbi.gov/The%20Zodiac%20Killer/The%20Zodiac%20Killer%20Part%2004"
+        }
+      ]
+    },
+    {
+      "id": "CASE-002",
+      "slug": "db-cooper",
+      "title": "D. B. Cooper",
+      "subtitle": "Aircraft hijacking, ransom evidence and geographic reconstruction",
+      "years": "1971–1992 (FBI file period)",
+      "location": "Pacific Northwest, USA",
+      "status": "Unsolved",
+      "focus": [
+        "flight and event timeline",
+        "ransom serial numbers",
+        "witness statements",
+        "terrain and search-area mapping"
+      ],
+      "documented": [
+        "On 24 November 1971, a man using the name Dan Cooper bought a one-way ticket to Seattle and hijacked a flight.",
+        "He received ransom money and parachutes, then jumped from the aircraft while it was in flight.",
+        "The FBI's public release describes investigative files covering November 1971 through May 1992."
+      ],
+      "sources": [
+        {
+          "label": "FBI Vault — D. B. Cooper files",
+          "url": "https://vault.fbi.gov/D-B-Cooper"
+        },
+        {
+          "label": "FBI Vault — public file index",
+          "url": "https://vault.fbi.gov/browse-files-list/search"
+        }
+      ]
+    },
+    {
+      "id": "CASE-003",
+      "slug": "unabomber",
+      "title": "Unabomber",
+      "subtitle": "Long-term investigative linkage and document-based identification",
+      "years": "1978–1996",
+      "location": "United States",
+      "status": "Closed; conviction",
+      "focus": [
+        "communications and publications",
+        "document comparison",
+        "investigative chronology",
+        "source provenance"
+      ],
+      "documented": [
+        "The FBI Vault publishes two parts of the Unabomber investigative file.",
+        "The public records can support a document-centred case study of investigative chronology and evidence provenance."
+      ],
+      "sources": [
+        {
+          "label": "FBI Vault — The Unabomber",
+          "url": "https://vault.fbi.gov/the-unabomber"
+        },
+        {
+          "label": "FBI Vault — Part 01",
+          "url": "https://vault.fbi.gov/the-unabomber/The%20Unabomber%20Part%2001/view"
+        }
+      ]
+    },
+    {
+      "id": "CASE-004",
+      "slug": "btk",
+      "title": "BTK / Dennis Rader",
+      "subtitle": "Correspondence, media contact and digital-media metadata",
+      "years": "1974–2005",
+      "location": "Wichita, Kansas, USA",
+      "status": "Closed; conviction",
+      "focus": [
+        "letters and media contact",
+        "timeline reconstruction",
+        "digital-media metadata",
+        "communication analysis"
+      ],
+      "documented": [
+        "The FBI Vault file describes murders in Wichita between 1974 and 1986 and a series of communications sent to media and police.",
+        "The file records renewed contact in March 2004 after a long period of silence."
+      ],
+      "sources": [
+        {
+          "label": "FBI Vault — Dennis Rader / BTK",
+          "url": "https://vault.fbi.gov/dennis-rader/Dennis%20Rader%20Part%2001%20%28Final%29"
+        }
+      ]
+    },
+    {
+      "id": "CASE-005",
+      "slug": "golden-state-killer",
+      "title": "Golden State Killer",
+      "subtitle": "Forensic genetic genealogy and cross-case linkage",
+      "years": "1970s–1980s; identification in 2018",
+      "location": "California, USA",
+      "status": "Identified; conviction",
+      "focus": [
+        "forensic DNA",
+        "genealogical linkage",
+        "multi-jurisdiction chronology",
+        "hypothesis validation"
+      ],
+      "documented": [
+        "The FBI states that forensic genetic genealogy contributed to the identification of the Golden State Killer in 2018.",
+        "The case is a strong example of how investigative leads from one analytical system require validation against independent evidence."
+      ],
+      "sources": [
+        {
+          "label": "FBI — CODIS and forensic genetic genealogy",
+          "url": "https://le.fbi.gov/science-and-lab/biometrics-and-fingerprints/codis-2"
+        }
+      ]
+    },
+    {
+      "id": "CASE-006",
+      "slug": "oj-simpson",
+      "title": "O. J. Simpson investigation",
+      "subtitle": "Forensic exhibits, laboratory reports and evidentiary disagreement",
+      "years": "1994–1995; FBI records released 2024",
+      "location": "Los Angeles, California, USA",
+      "status": "Criminal acquittal; civil liability finding",
+      "focus": [
+        "DNA and trace evidence",
+        "latent fingerprints",
+        "shoe-impression comparison",
+        "competing interpretations"
+      ],
+      "documented": [
+        "The FBI Vault provides a 475-page release concerning the investigation.",
+        "The public file includes laboratory records relating to latent fingerprint examinations.",
+        "The U.S. Department of Justice Inspector General published a technical discussion of EDTA testing in the case."
+      ],
+      "sources": [
+        {
+          "label": "FBI Vault — O. J. Simpson, Part 01",
+          "url": "https://vault.fbi.gov/orenthal-james-simpson-oj-simpson/orenthal-james-simpson-oj-simpson-part-01/view"
+        },
+        {
+          "label": "U.S. DOJ OIG — FBI laboratory work in the Simpson case",
+          "url": "https://oig.justice.gov/sites/default/files/archive/special/9704a/07simpso.htm"
+        }
+      ]
+    }
+  ]
+}
