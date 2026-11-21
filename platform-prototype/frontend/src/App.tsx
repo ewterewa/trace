@@ -4,7 +4,7 @@ import { Activity, AlertCircle, Bot, Clock3, FileText, FolderOpen, Network, Plus
 const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 type CaseItem = { id: string; name: string; created_at: string };
 type Artifact = { id: string; filename: string; sha256: string; mime_type: string | null; metadata: Record<string, unknown>; created_at: string };
-type LinkItem = { entity_type: string; matched_value: string; artifact_ids: string[]; occurrences: { artifact_id: string; filename: string }[]; match_rule: string; interpretation: string };
+type LinkItem = { entity_type: string; matched_value: string; artifact_ids: string[]; occurrences: { artifact_id: string; filename: string; source_lines?: number[] }[]; match_rule: string; interpretation: string };
 type Analysis = { artifact_count: number; entity_count: number; links: LinkItem[]; limitations: string[] };
 type Claim = { type: 'fact' | 'hypothesis' | 'question'; text: string; source_ids: string[]; confidence: 'low' | 'medium' | 'high' };
 type AIResult = { summary: string; claims: Claim[]; next_checks: string[]; model: string; notice: string };
@@ -152,5 +152,5 @@ function ArtifactTable({ artifacts }: { artifacts: Artifact[] }) {
 }
 function LinkList({ links, names }: { links: LinkItem[]; names: Map<string, string> }) {
  if (!links.length) return <div className="table-empty">Совпадений между разными источниками пока нет. Загрузите несколько материалов с общими значениями.</div>;
- return <div className="link-list">{links.map((link, i) => <div className="link-row" key={link.entity_type + link.matched_value + i}><div className="link-type">{link.entity_type}</div><div className="link-value"><b>{link.matched_value}</b><span>{link.artifact_ids.map(id => names.get(id) || id.slice(0, 8)).join(' · ')}</span></div><span className="match-tag">ТОЧНОЕ СОВПАДЕНИЕ</span></div>)}</div>;
+ return <div className="link-list">{links.map((link, i) => <div className="link-row" key={link.entity_type + link.matched_value + i}><div className="link-type">{link.entity_type}</div><div className="link-value"><b>{link.matched_value}</b><span>{link.occurrences.map(item => (names.get(item.artifact_id) || item.filename) + (item.source_lines?.length ? ' · стр. ' + item.source_lines.join(', ') : '')).join(' · ')}</span></div><span className="match-tag">ТОЧНОЕ СОВПАДЕНИЕ</span></div>)}</div>;
 }
