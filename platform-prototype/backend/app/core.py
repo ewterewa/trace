@@ -22,7 +22,7 @@ DATE_RE = re.compile(r"\b(?:20\d{2}[-/.]\d{1,2}[-/.]\d{1,2})(?:[ T]\d{2}:\d{2}(?
 class ParsedArtifact:
     text: str
     metadata: dict[str, Any]
-    entities: list[dict[str, str]]
+    entities: list[dict[str, Any]]
 
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
