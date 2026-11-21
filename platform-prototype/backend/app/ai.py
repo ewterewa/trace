@@ -1,4 +1,4 @@
-"""Optional AI layer. It interprets supplied evidence; it does not create evidence."""
+"""Provider-neutral AI layer. The model interprets evidence; it does not create evidence."""
 from __future__ import annotations
 
 import json
@@ -17,12 +17,34 @@ Return JSON with keys: summary (string), claims (array of objects with type: fac
 Do not provide instructions for unauthorized access, credential theft, malware, evasion, or surveillance."""
 
 
+def _client_and_model() -> tuple[OpenAI, str, str]:
+    """Use OpenAI directly or any self-hosted OpenAI-compatible inference server.
+
+    A self-hosted server can run without a commercial API key, but it still needs
+    an inference endpoint and compute. Never expose its credentials in the frontend.
+    """
+    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    base_url = os.getenv("TRACE_AI_BASE_URL", "").strip()
+    model = os.getenv("TRACE_AI_MODEL", "gpt-4.1-mini").strip()
+
+    if base_url:
+        # For local/self-hosted OpenAI-compatible servers, a placeholder key is
+        # accepted by the SDK when the server does not require authentication.
+        client = OpenAI(api_key=api_key or "local-inference", base_url=base_url)
+        provider = "self-hosted-compatible" if not api_key else "compatible-endpoint"
+        return client, model, provider
+
+    if api_key:
+        return OpenAI(api_key=api_key), model, "OpenAI"
+
+    raise RuntimeError(
+        "TRACE AI is not configured. Set OPENAI_API_KEY for OpenAI, or "
+        "TRACE_AI_BASE_URL and TRACE_AI_MODEL for a self-hosted OpenAI-compatible model."
+    )
+
+
 def ask_trace_ai(question: str, evidence_packet: dict[str, Any]) -> dict[str, Any]:
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise RuntimeError("TRACE AI is not configured. Set OPENAI_API_KEY on the backend.")
-    client = OpenAI(api_key=api_key)
-    model = os.getenv("TRACE_AI_MODEL", "gpt-4.1-mini")
+    client, model, provider = _client_and_model()
     response = client.chat.completions.create(
         model=model,
         temperature=0.1,
@@ -56,6 +78,6 @@ def ask_trace_ai(question: str, evidence_packet: dict[str, Any]) -> dict[str, An
         "summary": str(result.get("summary", "")),
         "claims": claims,
         "next_checks": [str(x) for x in result.get("next_checks", [])],
-        "model": model,
+        "model": f"{provider} · {model}",
         "notice": "AI-generated interpretation. Verify every claim against the cited original material.",
     }
