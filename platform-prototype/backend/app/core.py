@@ -27,29 +27,39 @@ class ParsedArtifact:
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
-def _entities(text: str) -> list[dict[str, str]]:
-    found: dict[tuple[str, str], dict[str, str]] = {}
-    def add(kind: str, value: str) -> None:
+def _entities(text: str) -> list[dict[str, Any]]:
+    found: dict[tuple[str, str], dict[str, Any]] = {}
+
+    def add(kind: str, value: str, offset: int) -> None:
         raw = value.strip()
         normalized = raw.lower()
         key = (kind, normalized)
+        line = text.count("\n", 0, offset) + 1
         if key not in found:
-            found[key] = {"type": kind, "value": raw, "normalized": normalized}
-    for value in EMAIL_RE.findall(text):
-        add("email", value)
-        add("domain", value.rsplit("@", 1)[-1])
-    for value in IP_RE.findall(text):
+            found[key] = {"type": kind, "value": raw, "normalized": normalized, "source_lines": []}
+        if line not in found[key]["source_lines"]:
+            found[key]["source_lines"].append(line)
+
+    for match in EMAIL_RE.finditer(text):
+        add("email", match.group(), match.start())
+        domain = match.group().rsplit("@", 1)[-1]
+        add("domain", domain, match.start())
+    for match in IP_RE.finditer(text):
+        value = match.group()
         try:
             ipaddress.ip_address(value)
-            add("ip", value)
+            add("ip", value, match.start())
         except ValueError:
             pass
-    for value in DATE_RE.findall(text):
-        add("date", value)
-    for value in PHONE_RE.findall(text):
+    for match in DATE_RE.finditer(text):
+        add("date", match.group(), match.start())
+    for match in PHONE_RE.finditer(text):
+        value = match.group()
+        if IP_RE.fullmatch(value) or DATE_RE.fullmatch(value):
+            continue
         digits = re.sub(r"\D", "", value)
         if 8 <= len(digits) <= 15:
-            add("phone", value)
+            add("phone", value, match.start())
     return list(found.values())
 
 def parse_artifact(filename: str, data: bytes) -> ParsedArtifact:
@@ -92,8 +102,8 @@ def parse_artifact(filename: str, data: bytes) -> ParsedArtifact:
     return ParsedArtifact(text=text, metadata=metadata, entities=_entities(text))
 
 def correlate(artifacts: list[dict[str, Any]]) -> dict[str, Any]:
-    """Only exact normalized matches are linked; no identity inference is performed."""
-    index: dict[tuple[str, str], list[dict[str, str]]] = {}
+    """Only exact normalized matches are linked; each occurrence retains source lines."""
+    index: dict[tuple[str, str], list[dict[str, Any]]] = {}
     for artifact in artifacts:
         for entity in artifact.get("entities", []):
             key = (entity["type"], entity["normalized"])
@@ -102,6 +112,7 @@ def correlate(artifacts: list[dict[str, Any]]) -> dict[str, Any]:
                 "filename": artifact["filename"],
                 "type": entity["type"],
                 "value": entity["value"],
+                "source_lines": entity.get("source_lines", []),
             })
     links = []
     for (kind, normalized), occurrences in index.items():
