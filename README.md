@@ -1,52 +1,25 @@
-# TRACE
+# TRACE — presentation website
 
-**Digital Investigation & Intelligence Platform**
+This repository hosts the public-facing presentation shell for the TRACE project.
 
-TRACE is an evidence-centered investigation workspace. This repository contains the first integrated front-end MVP: a synthetic case with an interactive 3D globe, evidence register and inspector, communication records, entity relationship view, and chronology.
+It is intentionally separate from the functional TRACE Intelligence Platform. This website explains the concept, design principles and proposed architecture; it does not ingest evidence or perform investigations.
 
-## Run locally
+## Stack
+- React + TypeScript + Vite
+- Three.js for the interactive 3D globe
+- GitHub Pages deployment through GitHub Actions
 
+## Local development
 ```bash
 npm install
 npm run dev
+npm run build
 ```
 
-Create a production build with `npm run build`.
-
 ## GitHub Pages
+In repository Settings → Pages, set **Build and deployment → Source** to **GitHub Actions**. The workflow in `.github/workflows/deploy.yml` builds the Vite site and deploys the `dist` directory.
 
-The Vite base path is configured for `/trace/`. To publish:
+Expected URL: https://ewterewa.github.io/trace/
 
-1. Open **Settings → Pages** in this repository.
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-3. The workflow in `.github/workflows/deploy.yml` builds and deploys the site after pushes to `main`.
-
-Expected site address: https://ewterewa.github.io/trace/
-
-## Current MVP
-
-- Case overview and investigation metrics
-- Interactive Three.js globe (illustrative markers only)
-- Evidence register with search and artifact inspector
-- Synthetic communication records and participants
-- Entity relationship visualization
-- Chronology with source timestamps
-- Responsive dark editorial interface with powder-pink accents
-
-## Integrity and limitations
-
-All included case data is synthetic. Hashes are demonstration placeholders, not computed digests. Geographic markers are decorative and do not represent evidence-backed locations. This is a front-end prototype: file ingestion, persistent storage, authentication, server-side parsing, cryptographic verification, and production analytical processing are not implemented yet.
-
-## Product principles
-
-- Preserve original evidence as immutable data in a production implementation.
-- Keep provenance and source references attached to derived records.
-- Distinguish facts, detections, and hypotheses.
-- Do not infer identity or precise location from weak indicators.
-- Make uncertainty visible to the analyst.
-
-## Stack
-
-React, TypeScript, Vite, Three.js, and Lucide icons.
-
-See `docs/` for product requirements, architecture, and design guidelines.
+## Separate product
+The working platform should live in a separate repository (planned: `trace-platform`). This presentation site should link to it when the platform has a published demo URL.
