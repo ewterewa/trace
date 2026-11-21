@@ -10,7 +10,7 @@ This directory is the **separate application prototype**. The public TRACE websi
 - Original files stored separately from extracted text and metadata
 - Deterministic extraction of email addresses, domains, valid IPv4 addresses, date strings and phone-like values
 - Exact-value cross-source correlation with explicit limitations
-- Optional TRACE AI endpoint using an OpenAI API key stored only on the backend
+- TRACE AI provider adapter: OpenAI API or a self-hosted OpenAI-compatible inference endpoint; credentials stay on the backend
 - AI claims are restricted to known artifact IDs; unsupported "facts" without citations are downgraded to hypotheses
 - Unit tests for hashing, extraction and correlation
 
@@ -74,7 +74,7 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5173. The UI connects to the local API at http://127.0.0.1:8000. Create an investigation, upload synthetic files from `backend/samples/`, then open **Связи** or **TRACE AI**. To enable live model responses, set `OPENAI_API_KEY` in `backend/.env` and restart the API. The frontend never receives the secret key.
+Open http://127.0.0.1:5173. The UI connects to the local API at http://127.0.0.1:8000. Create an investigation, upload synthetic files from `backend/samples/`, then open **Связи** or **TRACE AI**. To enable live model responses, configure either `OPENAI_API_KEY` (OpenAI-hosted model) or `TRACE_AI_BASE_URL` plus `TRACE_AI_MODEL` (a self-hosted OpenAI-compatible inference server) in `backend/.env`, then restart the API. A self-hosted model can avoid a commercial API key, but it still requires a reachable inference server and compute. The frontend never receives credentials.
 
 ## Minimal API flow
 
@@ -83,7 +83,7 @@ Open http://127.0.0.1:5173. The UI connects to the local API at http://127.0.0.1
 3. `GET /cases/{case_id}/analysis` for deterministic matches
 4. `POST /cases/{case_id}/ask` with JSON `{"question":"What exact values recur across the sources?"}`
 
-The AI endpoint returns HTTP 503 until `OPENAI_API_KEY` is configured on the backend. No API key belongs in frontend code, GitHub Pages, or a committed file.
+The AI endpoint returns HTTP 503 until either OpenAI credentials or a self-hosted compatible inference endpoint is configured on the backend. No API key belongs in frontend code, GitHub Pages, or a committed file.
 
 ## Run tests
 
