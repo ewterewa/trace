@@ -29,7 +29,7 @@ app = FastAPI(title="TRACE Platform API", version="0.1.0",
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
-    allow_origin_regex=r"https://.*\\.app\\.github\\.dev",
+    allow_origin_regex=r"https://.*\.app\.github\.dev",
     allow_credentials=False,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
