@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from .ai import ask_trace_ai
@@ -22,6 +23,13 @@ ALLOWED = {".txt", ".md", ".log", ".json", ".csv", ".eml"}
 
 app = FastAPI(title="TRACE Platform API", version="0.1.0",
               description="Evidence-first analytical workspace prototype")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 class CaseCreate(BaseModel):
     name: str = Field(min_length=1, max_length=120)
