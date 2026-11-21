@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight, Menu, X } from 'lucide-react';
 import Globe from './Globe';
 
-const nav = [{ label: 'Задача', id: 'idea' }, { label: 'Возможности', id: 'method' }, { label: 'Методология', id: 'architecture' }, { label: 'О проекте', id: 'about' }];
+const nav = [{ label: 'Концепция', id: 'idea' }, { label: 'Возможности', id: 'method' }, { label: 'Методология', id: 'architecture' }, { label: 'Принципы', id: 'about' }];
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -10,7 +10,7 @@ export default function App() {
   const closeMenu = () => setMenuOpen(false);
   return <main className="site-shell">
     <header className="site-header">
-      <a className="wordmark" href="#top" aria-label="TRACE, на главную"><span className="wordmark-mark">T</span><span>TRACE</span><sup>ЦИФРОВАЯ АНАЛИТИКА</sup></a>
+      <a className="wordmark" href="#top" aria-label="TRACE, на главную"><span className="wordmark-mark">T</span><span>TRACE</span><sup>RESEARCH CONCEPT</sup></a>
       <nav className={menuOpen ? 'main-nav is-open' : 'main-nav'}>{nav.map(item => <a key={item.id} href={'#' + item.id} onClick={closeMenu}>{item.label}</a>)}</nav>
       <a className="header-link" href="#platform">К проекту <ArrowUpRight size={15}/></a>
       <button className="menu-toggle" aria-label="Открыть меню" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button>
@@ -19,10 +19,10 @@ export default function App() {
     <section className="hero" id="top">
       <div className="hero-grid"></div>
       <div className="hero-copy">
-        <div className="eyebrow"><span className="eyebrow-dot"></span> КОНЦЕПЦИЯ АНАЛИТИЧЕСКОЙ СРЕДЫ</div>
+        <div className="eyebrow"><span className="eyebrow-dot"></span> КОНЦЕПЦИЯ ИНТЕЛЛЕКТУАЛЬНОЙ СРЕДЫ АНАЛИЗА</div>
         <h1>Увидеть связи.<br/><em>Понять целое.</em></h1>
-        <p className="hero-lead">TRACE — концепция среды для комплексного анализа цифровых следов. Она объединяет разнородные источники, помогает выявлять связи между объектами и восстанавливать контекст событий.</p>
-        <div className="hero-actions"><a className="button button-light" href="#idea">Посмотреть идею <ArrowDown size={16}/></a><a className="text-link" href="#architecture">Методология TRACE <ArrowUpRight size={15}/></a></div>
+        <p className="hero-lead">TRACE — концепция среды для исследования цифровых следов, взаимосвязей и событий. Подход, в котором каждый аналитический вывод сохраняет связь с исходным материалом.</p>
+        <div className="hero-actions"><a className="button button-light" href="#idea">Посмотреть идею <ArrowDown size={16}/></a><a className="text-link" href="#architecture">Методологический подход <ArrowUpRight size={15}/></a></div>
         <div className="hero-index"><span>01 / 04</span><i></i><span>ЕДИНАЯ СРЕДА ДЛЯ АНАЛИЗА</span></div>
         <div className="hero-card"><span className="hero-card-mark">T</span><div><b>TRACE</b><small>Цифровые следы. Связи. События.</small></div><span className="hero-card-arrow">↗</span></div>
       </div>
@@ -36,7 +36,7 @@ export default function App() {
 
     <section className="intro-section section-pad" id="idea">
       <div className="section-kicker"><span>01</span> / ИССЛЕДОВАТЕЛЬСКАЯ ЗАДАЧА</div>
-      <div className="intro-layout"><h2>Данные редко<br/>рассказывают <em>историю</em><br/>по отдельности.</h2><div className="intro-text"><p>Цифровые материалы распределены между разными форматами и источниками: сообщениями, документами, сетевыми событиями, изображениями и метаданными. Их раздельное изучение затрудняет восстановление общей картины.</p><p>TRACE предлагает рассматривать эти материалы в единой аналитической модели: сопоставлять объекты, выявлять отношения между ними и прослеживать ход событий с возможностью вернуться к исходному основанию каждого наблюдения.</p><a className="underlined-link" href="#method">Принцип работы <ArrowRight size={15}/></a></div></div>
+      <div className="intro-layout"><h2>Данные редко<br/>рассказывают <em>историю</em><br/>по отдельности.</h2><div className="intro-text"><p>Цифровые следы распределены между разными источниками и форматами. Документы, сообщения, сетевые события и метаданные могут описывать разные стороны одной ситуации, но редко представлены как единая картина.</p><p>TRACE предлагает концепцию среды, в которой эти материалы можно структурировать, сопоставлять и изучать через связи между объектами и событиями.</p><a className="underlined-link" href="#method">Принцип работы <ArrowRight size={15}/></a></div></div>
       <div className="statement-line"><span>ОТ ФРАГМЕНТОВ</span><b>→</b><span>К КОНТЕКСТУ</span><b>→</b><span>К ПОНИМАНИЮ</span></div>
     </section>
 
