@@ -10,7 +10,7 @@ export default function App() {
   const closeMenu = () => setMenuOpen(false);
   return <main className="site-shell">
     <header className="site-header">
-      <a className="wordmark" href="#top" aria-label="TRACE, на главную"><span className="wordmark-mark">T</span><span>TRACE</span><sup>RESEARCH CONCEPT</sup></a>
+      <a className="wordmark" href="#top" aria-label="TRACE, на главную"><span className="wordmark-mark">T</span><span>TRACE</span><sup>КОНЦЕПЦИЯ ПРОЕКТА</sup></a>
       <nav className={menuOpen ? 'main-nav is-open' : 'main-nav'}>{nav.map(item => <a key={item.id} href={'#' + item.id} onClick={closeMenu}>{item.label}</a>)}</nav>
       <a className="header-link" href="#platform">К проекту <ArrowUpRight size={15}/></a>
       <button className="menu-toggle" aria-label="Открыть меню" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button>
