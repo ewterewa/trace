@@ -1,0 +1,61 @@
+"""Optional AI layer. It interprets supplied evidence; it does not create evidence."""
+from __future__ import annotations
+
+import json
+import os
+from typing import Any
+
+from openai import OpenAI
+
+SYSTEM_PROMPT = """You are TRACE AI, an analytical assistant for reviewing user-provided digital materials.
+Use only the evidence packet supplied in this request. Never claim to have inspected files or facts not included.
+Separate directly supported observations from hypotheses and questions for further review.
+Every claim must cite one or more artifact IDs present in the packet. If no artifact supports a claim, do not state it as a fact.
+A shared email, phone number, IP address, or other identifier is not proof of common identity, ownership, intent, or physical location.
+Do not infer exact geolocation from an IP address. Preserve uncertainty and mention conflicting or missing data.
+Return JSON with keys: summary (string), claims (array of objects with type: fact|hypothesis|question, text (string), source_ids (array of artifact IDs), confidence (low|medium|high)), next_checks (array of strings).
+Do not provide instructions for unauthorized access, credential theft, malware, evasion, or surveillance."""
+
+
+def ask_trace_ai(question: str, evidence_packet: dict[str, Any]) -> dict[str, Any]:
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("TRACE AI is not configured. Set OPENAI_API_KEY on the backend.")
+    client = OpenAI(api_key=api_key)
+    model = os.getenv("TRACE_AI_MODEL", "gpt-4.1-mini")
+    response = client.chat.completions.create(
+        model=model,
+        temperature=0.1,
+        response_format={"type": "json_object"},
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": json.dumps({
+                "question": question,
+                "evidence_packet": evidence_packet,
+            }, ensure_ascii=False)},
+        ],
+    )
+    raw = response.choices[0].message.content or "{}"
+    result = json.loads(raw)
+    allowed_ids = {a["id"] for a in evidence_packet.get("artifacts", [])}
+    claims = []
+    for claim in result.get("claims", []):
+        cited = [sid for sid in claim.get("source_ids", []) if sid in allowed_ids]
+        kind = claim.get("type", "hypothesis")
+        if kind not in {"fact", "hypothesis", "question"}:
+            kind = "hypothesis"
+        if kind == "fact" and not cited:
+            kind = "hypothesis"
+        claims.append({
+            "type": kind,
+            "text": str(claim.get("text", "")),
+            "source_ids": cited,
+            "confidence": claim.get("confidence", "low") if claim.get("confidence") in {"low", "medium", "high"} else "low",
+        })
+    return {
+        "summary": str(result.get("summary", "")),
+        "claims": claims,
+        "next_checks": [str(x) for x in result.get("next_checks", [])],
+        "model": model,
+        "notice": "AI-generated interpretation. Verify every claim against the cited original material.",
+    }
