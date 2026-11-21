@@ -52,6 +52,18 @@ uvicorn app.main:app --reload
 API docs: http://127.0.0.1:8000/docs  
 Health check: http://127.0.0.1:8000/health
 
+## Run the workspace UI
+
+Open a second terminal:
+
+```bash
+cd platform-prototype/frontend
+npm install
+npm run dev
+```
+
+Open http://127.0.0.1:5173. The UI connects to the local API at http://127.0.0.1:8000. Create an investigation, upload synthetic files from `backend/samples/`, then open **Связи** or **TRACE AI**. To enable live model responses, set `OPENAI_API_KEY` in `backend/.env` and restart the API. The frontend never receives the secret key.
+
 ## Minimal API flow
 
 1. `POST /cases` with JSON `{"name":"Synthetic review"}`
