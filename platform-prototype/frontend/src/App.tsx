@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, AlertCircle, Bot, Clock3, FileText, FolderOpen, Network, Plus, RefreshCw, Send, ShieldCheck, Sparkles, Upload, Workflow, X, ArrowUpRight } from 'lucide-react';
 
-const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const API = import.meta.env.VITE_API_URL || (window.location.hostname.endsWith('.app.github.dev') ? 'https://' + window.location.hostname.replace('-5173.', '-8000.') : 'http://127.0.0.1:8000');
 type CaseItem = { id: string; name: string; created_at: string };
 type Artifact = { id: string; filename: string; sha256: string; mime_type: string | null; metadata: Record<string, unknown>; created_at: string };
 type LinkItem = { entity_type: string; matched_value: string; artifact_ids: string[]; occurrences: { artifact_id: string; filename: string; source_lines?: number[] }[]; match_rule: string; interpretation: string };
