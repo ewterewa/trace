@@ -11,10 +11,13 @@ from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
 from .ai import ask_trace_ai
 from .core import correlate, parse_artifact, sha256_bytes
+
+load_dotenv()
 
 DATA_DIR = Path(os.getenv("TRACE_DATA_DIR", "./data")).resolve()
 DB_PATH = DATA_DIR / "trace.sqlite3"
