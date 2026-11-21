@@ -1,0 +1,6 @@
+SYNTHETIC TEST MATERIAL — NOT A REAL INVESTIGATION
+
+Review note created 2026-11-03 10:30.
+The sample record repeats analyst@example.org for parser and exact-match testing.
+Reference ID CASE-DEMO-104 is a synthetic identifier.
+The documentation-only address 192.0.2.44 is reserved for examples.
