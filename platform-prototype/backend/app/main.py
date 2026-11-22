@@ -95,6 +95,7 @@ def create_case(payload: CaseCreate) -> dict[str, Any]:
     created = datetime.now(timezone.utc).isoformat()
     with connect() as db:
         db.execute("INSERT INTO cases VALUES (?, ?, ?)", (case_id, payload.name, created))
+        db.execute("INSERT INTO audit_events VALUES (?,?,?,?,?,?,?)", (str(uuid.uuid4()), case_id, "local-operator", "case.created", case_id, json.dumps({"name": payload.name}), created))
     return {"id": case_id, "name": payload.name, "created_at": created}
 
 @app.get("/cases")
@@ -135,6 +136,10 @@ async def upload_artifact(case_id: str, file: UploadFile = File(...)) -> dict[st
         raise HTTPException(413, "File exceeds configured upload limit")
     try:
         parsed = parse_artifact(filename, data)
+        parsed.metadata["byte_size"] = len(data)
+        parsed.metadata["original_filename"] = filename
+        parsed.metadata["received_at_utc"] = datetime.now(timezone.utc).isoformat()
+        parsed.metadata["integrity"] = "sha256"
     except (UnicodeError, ValueError, json.JSONDecodeError) as exc:
         raise HTTPException(422, f"Could not parse file: {exc}") from exc
     artifact_id = str(uuid.uuid4())
@@ -151,6 +156,7 @@ async def upload_artifact(case_id: str, file: UploadFile = File(...)) -> dict[st
              parsed.text, json.dumps(parsed.metadata, ensure_ascii=False),
              json.dumps(parsed.entities, ensure_ascii=False), created),
         )
+        db.execute("INSERT INTO audit_events VALUES (?,?,?,?,?,?,?)", (str(uuid.uuid4()), case_id, "local-operator", "artifact.ingested", artifact_id, json.dumps({"filename": filename, "sha256": digest, "bytes": len(data)}), created))
     return {
         "id": artifact_id, "filename": filename, "sha256": digest,
         "metadata": parsed.metadata, "entities": parsed.entities,
