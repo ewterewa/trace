@@ -14,6 +14,8 @@ This directory is the **separate application prototype**. The public TRACE websi
 - AI claims are restricted to known artifact IDs; unsupported "facts" without citations are downgraded to hypotheses
 - Unit tests for hashing, extraction and correlation
 - Image, audio and video uploads are preserved as original hashed evidence files; no transcript is fabricated
+- GPX ingestion extracts track, route and waypoint coordinates, elevation and source timestamps while preserving the original file and SHA-256
+- Evidence-linked geospatial workspace plots only coordinates extracted from uploaded GPX originals, with OpenStreetMap attribution and a coordinate register
 - Original artifact download endpoint, case notes, audit-event records, source-derived date mentions and an evidence-to-entity graph API
 - The graph API labels edges as source mentions only; it does not infer identity or physical presence
 
@@ -118,7 +120,7 @@ python -m unittest discover -s tests -v
 - `GET/POST /cases/{case_id}/notes` stores analyst notes separately from originals.
 - Image/audio/video files are hashed and stored unchanged. Automated OCR, transcription and media metadata extraction are not implemented yet.
 
-The React workspace now exposes chronology, graph, notes and audit panels. The graph is an evidence-linked data view, not yet a force-directed visual graph. The chronology is a source-date register, not a verified event timeline.
+The React workspace now exposes chronology, geospatial routes, graph, notes and audit panels. The geography panel uses OpenStreetMap tiles for context; track geometry and the coordinate register come only from the selected original GPX artifact. The graph is an evidence-linked data view, not yet a force-directed visual graph. The chronology is a source-date register, not a verified event timeline.
 
 ## Production boundary
 
@@ -126,11 +128,11 @@ See [PRODUCTION_READINESS.md](./PRODUCTION_READINESS.md). This remains a pilot f
 
 ## Planned next milestones
 
-1. Add a React workspace for evidence, graph, chronology and TRACE AI.
-2. Add PDF and structured network-capture parsing with dedicated parsers and test fixtures.
+1. Add PDF/DOCX and structured network-capture parsing with dedicated parsers and test fixtures.
+2. Extend geospatial ingestion to EXIF, KML and GPX extensions while preserving format-specific provenance.
 3. Replace SQLite with PostgreSQL and add explicit provenance and append-only audit events.
 4. Add authentication, case-level authorization, upload scanning, encryption and retention/deletion policy before any real-data use.
-5. Add graph visualization and evidence-linked report export.
+5. Add force-directed graph visualization and evidence-linked report export.
 6. Add a provider abstraction and controlled tool-calling for AI; keep deterministic operations authoritative.
 
 
