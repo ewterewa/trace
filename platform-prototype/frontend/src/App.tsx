@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Activity, AlertCircle, Bot, Clock3, FileText, FolderOpen, Network, Plus, RefreshCw, Send, ShieldCheck, Sparkles, Upload, Workflow, X, ArrowUpRight } from 'lucide-react';
+import { Activity, AlertCircle, Bot, Clock3, FileText, FolderOpen, Network, Plus, RefreshCw, Send, ShieldCheck, Sparkles, Upload, Workflow, X, ArrowUpRight, MapPin } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || (window.location.hostname.endsWith('.app.github.dev') ? 'https://' + window.location.hostname.replace('-5173.', '-8000.') : 'http://127.0.0.1:8000');
 type CaseItem = { id: string; name: string; created_at: string };
@@ -8,10 +8,12 @@ type LinkItem = { entity_type: string; matched_value: string; artifact_ids: stri
 type Analysis = { artifact_count: number; entity_count: number; links: LinkItem[]; limitations: string[] };
 type Claim = { type: 'fact' | 'hypothesis' | 'question'; text: string; source_ids: string[]; confidence: 'low' | 'medium' | 'high' };
 type AIResult = { summary: string; claims: Claim[]; next_checks: string[]; model: string; notice: string };
-type Tab = 'overview' | 'evidence' | 'links' | 'timeline' | 'graph' | 'audit' | 'notes' | 'ai';
+type GeoPoint = { lat: number; lon: number; ele?: string; time?: string; point_index: number; segment_index: number };
+type GeoTrack = { id: string; name: string; kind: string; artifact_id: string; filename: string; sha256: string; points: GeoPoint[] };
+type Tab = 'overview' | 'evidence' | 'links' | 'timeline' | 'graph' | 'audit' | 'notes' | 'geography' | 'ai';
 const tabs: { id: Tab; label: string; icon: typeof Activity }[] = [
  { id: 'overview', label: 'Обзор', icon: Activity }, { id: 'evidence', label: 'Материалы', icon: FolderOpen },
- { id: 'links', label: 'Связи', icon: Network }, { id: 'timeline', label: 'Хронология', icon: Clock3 }, { id: 'graph', label: 'Граф связей', icon: Network }, { id: 'notes', label: 'Заметки', icon: FileText }, { id: 'audit', label: 'Журнал', icon: ShieldCheck },
+ { id: 'links', label: 'Связи', icon: Network }, { id: 'timeline', label: 'Хронология', icon: Clock3 }, { id: 'geography', label: 'География', icon: MapPin }, { id: 'graph', label: 'Граф связей', icon: Network }, { id: 'notes', label: 'Заметки', icon: FileText }, { id: 'audit', label: 'Журнал', icon: ShieldCheck },
  { id: 'ai', label: 'TRACE AI', icon: Sparkles }
 ];
 
@@ -62,8 +64,8 @@ export default function App() {
  useEffect(() => { void refreshCases(); }, []);
  useEffect(() => { if (selected) void loadWorkspace(selected); }, [selected]);
  useEffect(() => {
-  if (!selected || !['timeline','graph','audit','notes'].includes(tab)) return;
-  const endpoint = tab === 'timeline' ? 'timeline' : tab === 'graph' ? 'graph' : tab === 'audit' ? 'audit' : 'notes';
+  if (!selected || !['timeline','geography','graph','audit','notes'].includes(tab)) return;
+  const endpoint = tab === 'timeline' ? 'timeline' : tab === 'geography' ? 'geo' : tab === 'graph' ? 'graph' : tab === 'audit' ? 'audit' : 'notes';
   void request<any>('/cases/' + selected + '/' + endpoint).then(setModuleData).catch(e => setError(e instanceof Error ? e.message : 'Ошибка загрузки раздела'));
  }, [selected, tab]);
 
@@ -134,14 +136,15 @@ export default function App() {
      <div className="case-strip"><div><span className="case-dot"/><b>{activeCase?.name || 'Загрузка исследования'}</b><small>ID: {selected.slice(0, 8)}</small></div><span>ЛОКАЛЬНОЕ ИССЛЕДОВАНИЕ</span></div>
      {tab === 'overview' && <>
       <div className="stats-grid">{stats.map(s => { const Icon = s.icon; return <div className="stat-card" key={s.label}><div className="stat-icon"><Icon size={17}/></div><span>{s.label}</span><strong>{s.value}</strong></div>; })}</div>
-      <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">01 / INGESTION</span><h2>Добавить материалы</h2><p>Оригиналы сохраняются отдельно. Для каждого файла рассчитывается SHA-256.</p></div><button className="secondary-button" onClick={() => fileRef.current?.click()} disabled={busy}><Upload size={16}/> Загрузить файлы</button></div><div className="drop-zone" onClick={() => fileRef.current?.click()} role="button" tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') fileRef.current?.click(); }}><div className="drop-icon"><Upload size={21}/></div><b>{busy ? 'Обработка материалов…' : 'Выберите материалы для исследования'}</b><span>Документы, изображения, аудио и видео · до 20 МБ на файл</span></div><input ref={fileRef} hidden type="file" multiple accept=".txt,.md,.log,.json,.csv,.eml,.jpg,.jpeg,.png,.webp,.mp3,.wav,.m4a,.mp4,.mov" onChange={e => void uploadFiles(e.target.files)}/></section>
+      <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">01 / INGESTION</span><h2>Добавить материалы</h2><p>Оригиналы сохраняются отдельно. Для каждого файла рассчитывается SHA-256.</p></div><button className="secondary-button" onClick={() => fileRef.current?.click()} disabled={busy}><Upload size={16}/> Загрузить файлы</button></div><div className="drop-zone" onClick={() => fileRef.current?.click()} role="button" tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') fileRef.current?.click(); }}><div className="drop-icon"><Upload size={21}/></div><b>{busy ? 'Обработка материалов…' : 'Выберите материалы для исследования'}</b><span>Документы, изображения, аудио и видео · до 20 МБ на файл</span></div><input ref={fileRef} hidden type="file" multiple accept=".txt,.md,.log,.json,.csv,.eml,.jpg,.jpeg,.png,.webp,.mp3,.wav,.m4a,.mp4,.mov,.gpx" onChange={e => void uploadFiles(e.target.files)}/></section>
       <section className="panel"><div className="panel-heading compact"><div><span className="panel-kicker">02 / EVIDENCE REGISTER</span><h2>Последние материалы</h2></div><button className="quiet-button" onClick={() => setTab('evidence')}>Все материалы <ArrowUpRight size={14}/></button></div><ArtifactTable artifacts={artifacts.slice(0, 5)} caseId={selected}/></section>
       <section className="panel"><div className="panel-heading compact"><div><span className="panel-kicker">03 / CORRELATION ENGINE</span><h2>Совпадения между источниками</h2></div><button className="quiet-button" onClick={() => setTab('links')}>Открыть связи <ArrowUpRight size={14}/></button></div><LinkList links={analysis?.links.slice(0, 4) || []} names={names}/><p className="panel-footnote">Совпадение значения — основание для проверки, а не доказательство общей личности или принадлежности.</p></section>
      </>}
-     {tab === 'evidence' && <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">EVIDENCE REGISTER</span><h2>Реестр материалов</h2><p>Контрольные суммы и метаданные загруженных оригиналов.</p></div><button className="secondary-button" onClick={() => fileRef.current?.click()}><Upload size={16}/> Добавить</button></div><input ref={fileRef} hidden type="file" multiple accept=".txt,.md,.log,.json,.csv,.eml" onChange={e => void uploadFiles(e.target.files)}/><ArtifactTable artifacts={artifacts} caseId={selected}/></section>}
+     {tab === 'evidence' && <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">EVIDENCE REGISTER</span><h2>Реестр материалов</h2><p>Контрольные суммы и метаданные загруженных оригиналов.</p></div><button className="secondary-button" onClick={() => fileRef.current?.click()}><Upload size={16}/> Добавить</button></div><input ref={fileRef} hidden type="file" multiple accept=".txt,.md,.log,.json,.csv,.eml,.gpx" onChange={e => void uploadFiles(e.target.files)}/><ArtifactTable artifacts={artifacts} caseId={selected}/></section>}
      {tab === 'links' && <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">LINK ANALYSIS</span><h2>Обнаруженные совпадения</h2><p>Автоматически найдены только точные совпадения нормализованных значений.</p></div><span className="count-pill">{analysis?.links.length || 0} связей</span></div><LinkList links={analysis?.links || []} names={names}/>{analysis?.limitations.map(item => <p className="limit-note" key={item}>• {item}</p>)}</section>}
      
 {tab === 'timeline' && <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">SOURCE-DERIVED CHRONOLOGY</span><h2>Упоминания дат в источниках</h2><p>Извлечённые даты не являются подтверждёнными событиями. Каждая запись содержит ссылку на файл и строку.</p></div></div>{(moduleData?.items || []).length ? moduleData.items.map((item:any,i:number)=><div className="link-row" key={item.artifact_id+i}><div className="link-type">{item.date_text}</div><div className="link-value"><b>{item.filename}</b><span>Строка {item.source_line} · {item.classification}</span></div><span className="match-tag">SOURCE</span></div>) : <div className="table-empty">Упоминания дат не найдены.</div>}<p className="panel-footnote">{moduleData?.notice || ''}</p></section>}
+{tab === 'geography' && <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">SOURCE-DERIVED GEOINT</span><h2>Геопространственные данные</h2><p>Маршруты строятся по координатам, извлечённым из оригинальных GPX-файлов.</p></div><span className="count-pill">{moduleData?.point_count || 0} точек</span></div><GeoMap tracks={moduleData?.tracks || []} notice={moduleData?.notice || 'Загрузка геоданных…'} caseId={selected}/></section>}
 {tab === 'graph' && <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">EVIDENCE RELATION GRAPH</span><h2>Граф упоминаний</h2><p>Сущности связываются с файлами, в которых они обнаружены.</p></div></div><p className="panel-footnote">{moduleData?.notice || 'Загрузка…'}</p>{(moduleData?.nodes || []).map((node:any)=><div className="link-row" key={node.id}><div className="link-type">{node.type}</div><div className="link-value"><b>{node.label}</b><span>{(moduleData.edges || []).filter((e:any)=>e.source===node.id||e.target===node.id).length} связей с материалами</span></div><span className="match-tag">{node.type==='artifact'?'SOURCE':'EXTRACTED'}</span></div>)}</section>}
 {tab === 'audit' && <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">ACTIVITY LOG</span><h2>Журнал действий</h2><p>Зарегистрированные операции в текущем локальном backend.</p></div></div>{(moduleData || []).length ? moduleData.map((item:any)=><div className="link-row" key={item.id}><div className="link-type">{item.actor}</div><div className="link-value"><b>{item.action}</b><span>{new Date(item.created_at).toLocaleString('ru-RU')}</span></div><span className="match-tag">LOGGED</span></div>) : <div className="table-empty">Записей пока нет.</div>}</section>}
 {tab === 'notes' && <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">CASE WORKING NOTES</span><h2>Рабочие заметки</h2><p>Заметки хранятся отдельно от оригинальных материалов.</p></div></div><textarea className="note-editor" value={noteText} onChange={e=>setNoteText(e.target.value)} placeholder="Добавить заметку исследователя…"/><button className="primary-button" onClick={saveNote} disabled={!noteText.trim()}>Сохранить заметку</button>{(moduleData || []).map((item:any)=><div className="link-row" key={item.id}><div className="link-type">{item.author}</div><div className="link-value"><b>{item.body}</b><span>{new Date(item.created_at).toLocaleString('ru-RU')}</span></div><span className="match-tag">NOTE</span></div>)}</section>}
@@ -162,6 +165,71 @@ export default function App() {
     <footer className="app-footer"><span>TRACE PLATFORM · RESEARCH PROTOTYPE</span><span>ПРОВЕРЯЙТЕ ПЕРВОИСТОЧНИКИ И ПРОИСХОЖДЕНИЕ ДАННЫХ</span></footer>
    </div>
   </main>
+ </div>;
+}
+
+function GeoMap({ tracks, notice, caseId }: { tracks: GeoTrack[]; notice: string; caseId: string }) {
+ const [activeId, setActiveId] = useState('');
+ const [zoomOffset, setZoomOffset] = useState(0);
+ const active = tracks.find(track => track.id === activeId) || tracks[0];
+ const points = active?.points || [];
+ const width = 900, height = 460, tileSize = 256;
+ const bounds = useMemo(() => {
+  if (!points.length) return null;
+  return {
+   minLat: Math.min(...points.map(p => p.lat)), maxLat: Math.max(...points.map(p => p.lat)),
+   minLon: Math.min(...points.map(p => p.lon)), maxLon: Math.max(...points.map(p => p.lon))
+  };
+ }, [active?.id, points.length]);
+ const baseZoom = bounds ? Math.max(2, Math.min(16, Math.floor(Math.log2(Math.min(
+  width / (tileSize * Math.max((bounds.maxLon - bounds.minLon) / 360, 0.00001)),
+  height / (tileSize * Math.max((bounds.maxLat - bounds.minLat) / 170, 0.00001))
+ )) - 1)) : 4;
+ const zoom = Math.max(2, Math.min(18, baseZoom + zoomOffset));
+ const centerLat = bounds ? (bounds.minLat + bounds.maxLat) / 2 : 0;
+ const centerLon = bounds ? (bounds.minLon + bounds.maxLon) / 2 : 0;
+ const worldSize = tileSize * Math.pow(2, zoom);
+ const project = (lat: number, lon: number) => {
+  const safeLat = Math.max(-85.0511, Math.min(85.0511, lat));
+  const x = (lon + 180) / 360 * worldSize;
+  const sin = Math.sin(safeLat * Math.PI / 180);
+  const y = (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * worldSize;
+  const centerSin = Math.sin(Math.max(-85.0511, Math.min(85.0511, centerLat)) * Math.PI / 180);
+  const centerX = (centerLon + 180) / 360 * worldSize;
+  const centerY = (0.5 - Math.log((1 + centerSin) / (1 - centerSin)) / (4 * Math.PI)) * worldSize;
+  return { x: x - centerX + width / 2, y: y - centerY + height / 2 };
+ };
+ const center = project(centerLat, centerLon);
+ const firstTileX = Math.floor((worldSize / 2 + center.x - width / 2) / tileSize);
+ const firstTileY = Math.floor((worldSize / 2 + center.y - height / 2) / tileSize);
+ const tiles = [];
+ for (let ty = firstTileY - 1; ty <= firstTileY + 5; ty++) {
+  for (let tx = firstTileX - 1; tx <= firstTileX + 5; tx++) {
+   const count = Math.pow(2, zoom);
+   if (ty < 0 || ty >= count) continue;
+   const wrappedX = ((tx % count) + count) % count;
+   const sin = Math.sin(Math.max(-85.0511, Math.min(85.0511, centerLat)) * Math.PI / 180);
+   const centerX = (centerLon + 180) / 360 * worldSize;
+   const centerY = (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * worldSize;
+   tiles.push({ key: zoom + '-' + tx + '-' + ty, url: 'https://tile.openstreetmap.org/' + zoom + '/' + wrappedX + '/' + ty + '.png', x: tx * tileSize - (centerX - width / 2), y: ty * tileSize - (centerY - height / 2) });
+  }
+ }
+ const groups = new Map<number, GeoPoint[]>();
+ points.forEach(point => groups.set(point.segment_index, [...(groups.get(point.segment_index) || []), point]));
+ const formatTime = (value?: string) => value ? new Date(value).toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'medium', timeZone: 'UTC' }) + ' UTC' : 'Время в источнике не указано';
+ useEffect(() => { setActiveId(tracks[0]?.id || ''); setZoomOffset(0); }, [tracks.map(t => t.id).join('|')]);
+ if (!tracks.length) return <div className="geo-empty"><MapPin size={25}/><b>Геоданные пока не обнаружены</b><span>Загрузите GPX-файл с GPS-треком или маршрутными точками. Координаты из других форматов пока не извлекаются.</span><p>{notice}</p></div>;
+ return <div className="geo-workspace">
+  {tracks.length > 1 && <label className="geo-select-label">НАБОР ДАННЫХ <select value={active?.id || ''} onChange={e => { setActiveId(e.target.value); setZoomOffset(0); }}>{tracks.map(track => <option key={track.id} value={track.id}>{track.name} · {track.filename}</option>)}</select></label>}
+  <div className="geo-map-shell"><svg className="geo-map" viewBox={'0 0 '+width+' '+height} role="img" aria-label="Карта GPS-маршрута">
+   <rect width={width} height={height} fill="#e7e4dc"/>
+   {tiles.map(tile => <image key={tile.key} href={tile.url} x={tile.x} y={tile.y} width={tileSize} height={tileSize} />)}
+   {Array.from(groups.entries()).map(([segment, segmentPoints]) => <polyline key={segment} points={segmentPoints.map(point => { const p=project(point.lat,point.lon); return p.x+','+p.y; }).join(' ')} fill="none" stroke="#bd607f" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity=".92" />)}
+   {points.length > 0 && <><circle cx={project(points[0].lat,points[0].lon).x} cy={project(points[0].lat,points[0].lon).y} r="7" fill="#77b88e" stroke="#fff" strokeWidth="2"/><circle cx={project(points[points.length-1].lat,points[points.length-1].lon).x} cy={project(points[points.length-1].lat,points[points.length-1].lon).y} r="7" fill="#c56d83" stroke="#fff" strokeWidth="2"/></>}
+  </svg><div className="geo-zoom"><button onClick={() => setZoomOffset(v => Math.min(v+1, 8))} aria-label="Увеличить">+</button><button onClick={() => setZoomOffset(v => Math.max(v-1, -8))} aria-label="Уменьшить">−</button></div><div className="geo-legend"><span><i className="geo-start"/> Начало</span><span><i className="geo-end"/> Конец</span><span>Уровень масштаба {zoom}</span></div></div>
+  <div className="geo-source"><div><span className="panel-kicker">ORIGINAL SOURCE</span><b>{active.filename}</b><small>{active.kind.toUpperCase()} · {points.length} координат · SHA-256 {active.sha256.slice(0,18)}…</small></div><a href={API+'/cases/'+caseId+'/artifacts/'+active.artifact_id+'/download'} target="_blank" rel="noreferrer">Открыть оригинал <ArrowUpRight size={13}/></a></div>
+  <div className="geo-points"><div className="geo-points-head"><b>Реестр координат</b><span>Время показано в UTC, если оно присутствует в GPX</span></div><div className="table-wrap"><table><thead><tr><th>№</th><th>ШИРОТА</th><th>ДОЛГОТА</th><th>ВРЕМЯ ИЗ ИСТОЧНИКА</th><th>ВЫСОТА</th></tr></thead><tbody>{points.slice(0,500).map(point=><tr key={point.point_index+'-'+point.segment_index}><td>{point.point_index+1}</td><td className="hash-cell">{point.lat.toFixed(6)}</td><td className="hash-cell">{point.lon.toFixed(6)}</td><td>{formatTime(point.time)}</td><td>{point.ele ? point.ele+' m' : '—'}</td></tr>)}</tbody></table></div>{points.length>500 && <p className="panel-footnote">Показаны первые 500 точек. Полный исходный GPX доступен по ссылке выше.</p>}</div>
+  <p className="geo-notice"><ShieldCheck size={14}/>{notice}</p><p className="geo-attribution">Картографическая подложка: © OpenStreetMap contributors · координаты маршрута взяты из загруженного оригинала</p>
  </div>;
 }
 
