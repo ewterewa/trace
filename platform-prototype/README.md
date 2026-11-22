@@ -93,7 +93,7 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5173. The UI connects to the local API at http://127.0.0.1:8000. Create an investigation, upload synthetic files from `backend/samples/`, then open **Связи** or **TRACE AI**. To enable live model responses, configure either `OPENAI_API_KEY` (OpenAI-hosted model) or `TRACE_AI_BASE_URL` plus `TRACE_AI_MODEL` (a self-hosted OpenAI-compatible inference server) in `backend/.env`, then restart the API. A self-hosted model can avoid a commercial API key, but it still requires a reachable inference server and compute. The frontend never receives credentials.
+Open http://127.0.0.1:5173. The UI connects to the local API at http://127.0.0.1:8000. Create an investigation, upload synthetic files from `backend/samples/`, then open **Связи** or **TRACE AI**. To inspect the map, upload [`SYNTHETIC_DEMO_ROUTE.gpx`](./backend/samples/SYNTHETIC_DEMO_ROUTE.gpx) and open **География**. The route is fictional and marked as synthetic; it is not evidence of real movement. To enable live model responses, configure either `OPENAI_API_KEY` (OpenAI-hosted model) or `TRACE_AI_BASE_URL` plus `TRACE_AI_MODEL` (a self-hosted OpenAI-compatible inference server) in `backend/.env`, then restart the API. A self-hosted model can avoid a commercial API key, but it still requires a reachable inference server and compute. The frontend never receives credentials.
 
 ## Minimal API flow
 
