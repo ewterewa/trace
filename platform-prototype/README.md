@@ -145,3 +145,10 @@ https://ewterewa.github.io/trace/platform/
 This preview includes six public case-study summaries and 600 synthetic interface records (100 per case) to demonstrate evidence registers, reconstructed communications, link analysis, chronology and schematic geospatial views. Synthetic records are explicitly marked **RECONSTRUCTION / DEMO DATA** and are not authentic case evidence. Public historical facts remain separated from those records and link to their institutional sources.
 
 The public preview is static and browser-local: uploaded files and notes stay in IndexedDB on the current device. It calculates SHA-256 for uploaded originals, supports integrity re-checks, and performs deterministic extraction of email addresses, IPv4 strings, domains and date mentions from small text files, with file and line references. It does not sync data between devices, connect to the FastAPI database, or execute live AI inference. For the backend-connected prototype, launch the Codespaces environment described above. Do not expose the current MVP backend to the public internet or upload sensitive material.
+
+
+## Public static demo: GPX testing
+
+The GitHub Pages demo at https://ewterewa.github.io/trace/platform/ can parse GPX files entirely in the browser. Open any case, choose **Карта**, download the clearly labeled synthetic route from that page, then add the downloaded `.gpx` file under **Файлы**. Return to **Карта** to view the extracted route and coordinate count. The original file stays in this browser's IndexedDB store and its SHA-256 digest is displayed with the file record.
+
+The public demo does not upload evidence to a server. GPX parsing is limited to tracks, routes and waypoints; it validates coordinate ranges and rejects DTD/entity declarations and files above 15 MB or 100,000 points. OpenStreetMap tile requests disclose the viewed map area to the tile provider. Use synthetic data only; do not upload confidential or real investigative coordinates.
