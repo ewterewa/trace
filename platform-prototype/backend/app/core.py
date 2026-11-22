@@ -7,6 +7,8 @@ import io
 import ipaddress
 import json
 import re
+import math
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from email import policy
 from email.parser import BytesParser
@@ -97,6 +99,52 @@ def parse_artifact(filename: str, data: bytes) -> ParsedArtifact:
     elif suffix in {".txt", ".md", ".log"}:
         text = data.decode("utf-8-sig", errors="replace")
         metadata["parser"] = "plain_text"
+    elif suffix == ".gpx":
+        try:
+            root = ET.fromstring(data)
+        except ET.ParseError as exc:
+            raise ValueError(f"Invalid GPX XML: {exc}") from exc
+        if root.tag.rsplit("}", 1)[-1].lower() != "gpx":
+            raise ValueError("XML root element is not GPX")
+        def children(element, name):
+            return [child for child in element if child.tag.rsplit("}", 1)[-1].lower() == name]
+        def parse_point(element, index, segment_index):
+            try:
+                lat = float(element.attrib["lat"])
+                lon = float(element.attrib["lon"])
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ValueError("GPX point is missing valid latitude/longitude") from exc
+            if not math.isfinite(lat) or not math.isfinite(lon) or not -90 <= lat <= 90 or not -180 <= lon <= 180:
+                raise ValueError("GPX point has coordinates outside valid geographic ranges")
+            point = {"lat": lat, "lon": lon, "point_index": index, "segment_index": segment_index}
+            for child in element:
+                key = child.tag.rsplit("}", 1)[-1].lower()
+                if key in {"ele", "time", "name"} and child.text:
+                    point[key] = child.text.strip()
+            return point
+        geo_tracks = []
+        for track_index, track in enumerate(children(root, "trk"), 1):
+            name = next((x.text.strip() for x in children(track, "name") if x.text), f"Track {track_index}")
+            points, point_index = [], 0
+            for segment_index, segment in enumerate(children(track, "trkseg"), 1):
+                for point_element in children(segment, "trkpt"):
+                    points.append(parse_point(point_element, point_index, segment_index))
+                    point_index += 1
+            if points:
+                geo_tracks.append({"name": name, "kind": "track", "points": points})
+        for route_index, route in enumerate(children(root, "rte"), 1):
+            name = next((x.text.strip() for x in children(route, "name") if x.text), f"Route {route_index}")
+            points = [parse_point(el, i, 1) for i, el in enumerate(children(route, "rtept"))]
+            if points:
+                geo_tracks.append({"name": name, "kind": "route", "points": points})
+        waypoints = [parse_point(el, i, 1) for i, el in enumerate(children(root, "wpt"))]
+        if waypoints:
+            geo_tracks.append({"name": "Waypoints", "kind": "waypoints", "points": waypoints})
+        if not geo_tracks:
+            raise ValueError("GPX contains no valid track, route or waypoint coordinates")
+        point_count = sum(len(track["points"]) for track in geo_tracks)
+        text = ""
+        metadata.update({"parser": "gpx", "media_category": "geospatial", "analysis_status": "coordinates_extracted_from_original", "geo_tracks": geo_tracks, "track_count": len(geo_tracks), "point_count": point_count})
     elif suffix in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".mp3", ".wav", ".m4a", ".ogg", ".mp4", ".mov"}:
         text = ""
         image_ext = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
