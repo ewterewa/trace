@@ -184,7 +184,7 @@ function GeoMap({ tracks, notice, caseId }: { tracks: GeoTrack[]; notice: string
  const baseZoom = bounds ? Math.max(2, Math.min(16, Math.floor(Math.log2(Math.min(
   width / (tileSize * Math.max((bounds.maxLon - bounds.minLon) / 360, 0.00001)),
   height / (tileSize * Math.max((bounds.maxLat - bounds.minLat) / 170, 0.00001))
- )) - 1)) : 4;
+ )) - 1))) : 4;
  const zoom = Math.max(2, Math.min(18, baseZoom + zoomOffset));
  const centerLat = bounds ? (bounds.minLat + bounds.maxLat) / 2 : 0;
  const centerLon = bounds ? (bounds.minLon + bounds.maxLon) / 2 : 0;
