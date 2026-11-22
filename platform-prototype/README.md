@@ -13,6 +13,9 @@ This directory is the **separate application prototype**. The public TRACE websi
 - TRACE AI provider adapter: OpenAI API or a self-hosted OpenAI-compatible inference endpoint; credentials stay on the backend
 - AI claims are restricted to known artifact IDs; unsupported "facts" without citations are downgraded to hypotheses
 - Unit tests for hashing, extraction and correlation
+- Image, audio and video uploads are preserved as original hashed evidence files; no transcript is fabricated
+- Original artifact download endpoint, case notes, audit-event records, source-derived date mentions and an evidence-to-entity graph API
+- The graph API labels edges as source mentions only; it does not infer identity or physical presence
 
 This is an early local MVP, not a production forensic system. It has no authentication, multi-user permissions, encryption-at-rest, retention controls, malware scanning, immutable audit log or production deployment configuration. **Do not expose it to the public internet or upload sensitive/real investigative material.** Use synthetic data only until those controls exist.
 
@@ -91,6 +94,21 @@ The AI endpoint returns HTTP 503 until either OpenAI credentials or a self-hoste
 cd platform-prototype/backend
 python -m unittest discover -s tests -v
 ```
+
+## New analyst API modules
+
+- `GET /cases/{case_id}/artifacts/{artifact_id}/download` returns the stored original file.
+- `GET /cases/{case_id}/timeline` returns date mentions with artifact IDs and source-line numbers. These are not verified event times.
+- `GET /cases/{case_id}/graph` returns extracted entities connected to their source artifacts and source lines.
+- `GET /cases/{case_id}/audit` returns recorded case and evidence ingestion events.
+- `GET/POST /cases/{case_id}/notes` stores analyst notes separately from originals.
+- Image/audio/video files are hashed and stored unchanged. Automated OCR, transcription and media metadata extraction are not implemented yet.
+
+The React workspace now exposes chronology, graph, notes and audit panels. The graph is an evidence-linked data view, not yet a force-directed visual graph. The chronology is a source-date register, not a verified event timeline.
+
+## Production boundary
+
+See [PRODUCTION_READINESS.md](./PRODUCTION_READINESS.md). This remains a pilot foundation: SQLite/local disk, no production identity provider, no multi-tenant authorization, no malware quarantine, no managed encrypted object storage and no operational SLA. Do not upload sensitive or real investigative material to a public deployment.
 
 ## Planned next milestones
 
