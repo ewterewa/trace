@@ -51,6 +51,20 @@ You do not need a laptop or a local Python/Node installation.
 
 The current prototype is intended for synthetic demonstration data only. It is not yet a public production deployment and must not receive sensitive case evidence.
 
+## Private Docker pilot
+
+The API can be run in a container with a persistent local evidence volume. The compose file binds the API to localhost only and is intended for a private pilot/demo, not a public production deployment.
+
+```bash
+cd platform-prototype
+docker compose up --build -d
+docker compose logs -f trace-api
+```
+
+API health: http://127.0.0.1:8000/health
+
+The container runs as a non-root user, drops Linux capabilities, uses a read-only root filesystem and stores case data in the named volume. This does not replace production identity, tenant isolation, managed PostgreSQL, encrypted object storage, malware scanning or independent security review.
+
 ## Run locally
 
 Requirements: Python 3.11+
