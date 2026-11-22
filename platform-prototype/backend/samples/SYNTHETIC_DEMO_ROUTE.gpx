@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="TRACE synthetic demo fixture" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>SYNTHETIC DEMO ROUTE — NOT REAL EVIDENCE</name>
+    <desc>Fictional coordinates created only to demonstrate the TRACE geospatial interface. This file does not describe a real person's movements or an actual event.</desc>
+  </metadata>
+  <trk>
+    <name>Synthetic demonstration path</name>
+    <trkseg>
+      <trkpt lat="52.51630" lon="13.37770"><ele>35</ele><time>2026-01-01T10:00:00Z</time></trkpt>
+      <trkpt lat="52.51710" lon="13.37920"><ele>36</ele><time>2026-01-01T10:02:00Z</time></trkpt>
+      <trkpt lat="52.51800" lon="13.38080"><ele>36</ele><time>2026-01-01T10:04:00Z</time></trkpt>
+      <trkpt lat="52.51890" lon="13.38240"><ele>37</ele><time>2026-01-01T10:06:00Z</time></trkpt>
+      <trkpt lat="52.51980" lon="13.38400"><ele>38</ele><time>2026-01-01T10:08:00Z</time></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
