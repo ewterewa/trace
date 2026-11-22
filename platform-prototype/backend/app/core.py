@@ -100,6 +100,8 @@ def parse_artifact(filename: str, data: bytes) -> ParsedArtifact:
         text = data.decode("utf-8-sig", errors="replace")
         metadata["parser"] = "plain_text"
     elif suffix == ".gpx":
+        if b"<!DOCTYPE" in data.upper() or b"<!ENTITY" in data.upper():
+            raise ValueError("GPX DTD and entity declarations are not supported")
         try:
             root = ET.fromstring(data)
         except ET.ParseError as exc:
@@ -143,6 +145,8 @@ def parse_artifact(filename: str, data: bytes) -> ParsedArtifact:
         if not geo_tracks:
             raise ValueError("GPX contains no valid track, route or waypoint coordinates")
         point_count = sum(len(track["points"]) for track in geo_tracks)
+        if point_count > 100000:
+            raise ValueError("GPX contains more than the supported limit of 100,000 points")
         text = ""
         metadata.update({"parser": "gpx", "media_category": "geospatial", "analysis_status": "coordinates_extracted_from_original", "geo_tracks": geo_tracks, "track_count": len(geo_tracks), "point_count": point_count})
     elif suffix in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".mp3", ".wav", ".m4a", ".ogg", ".mp4", ".mov"}:
