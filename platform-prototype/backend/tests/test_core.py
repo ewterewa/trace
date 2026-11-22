@@ -23,6 +23,29 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(parsed.metadata["analysis_status"], "original_preserved_not_transcribed")
         self.assertEqual(parsed.text, "")
 
+    def test_gpx_parser_preserves_source_coordinates_and_timestamps(self):
+        payload = b"""<?xml version="1.0"?>
+        <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="test">
+          <trk><name>Field route</name><trkseg>
+            <trkpt lat="52.5200" lon="13.4050"><ele>34.2</ele><time>2026-11-22T10:00:00Z</time></trkpt>
+            <trkpt lat="52.5210" lon="13.4060"><time>2026-11-22T10:01:00Z</time></trkpt>
+          </trkseg></trk>
+        </gpx>"""
+        parsed = parse_artifact("route.gpx", payload)
+        self.assertEqual(parsed.metadata["parser"], "gpx")
+        self.assertEqual(parsed.metadata["point_count"], 2)
+        points = parsed.metadata["geo_tracks"][0]["points"]
+        self.assertEqual(points[0]["lat"], 52.52)
+        self.assertEqual(points[0]["lon"], 13.405)
+        self.assertEqual(points[0]["time"], "2026-11-22T10:00:00Z")
+        self.assertEqual(points[1]["point_index"], 1)
+        self.assertEqual(parsed.text, "")
+
+    def test_gpx_parser_rejects_invalid_coordinates(self):
+        payload = b'<gpx><trk><trkseg><trkpt lat="95" lon="13"/></trkseg></trk></gpx>'
+        with self.assertRaises(ValueError):
+            parse_artifact("invalid.gpx", payload)
+
     def test_exact_match_links_sources_without_identity_claim(self):
         artifacts = [
             {"id": "a1", "filename": "one.txt", "entities": [{"type":"email","value":"x@y.org","normalized":"x@y.org"}]},
