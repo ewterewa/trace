@@ -61,6 +61,11 @@ export default function App() {
  }
  useEffect(() => { void refreshCases(); }, []);
  useEffect(() => { if (selected) void loadWorkspace(selected); }, [selected]);
+ useEffect(() => {
+  if (!selected || !['timeline','graph','audit','notes'].includes(tab)) return;
+  const endpoint = tab === 'timeline' ? 'timeline' : tab === 'graph' ? 'graph' : tab === 'audit' ? 'audit' : 'notes';
+  void request<any>('/cases/' + selected + '/' + endpoint).then(setModuleData).catch(e => setError(e instanceof Error ? e.message : 'Ошибка загрузки раздела'));
+ }, [selected, tab]);
 
  async function createCase() {
   setBusy(true);
@@ -81,6 +86,14 @@ export default function App() {
    await loadWorkspace(selected); setTab('evidence');
   } catch (e) { setError(e instanceof Error ? e.message : 'Не удалось загрузить файл'); }
   finally { setBusy(false); if (fileRef.current) fileRef.current.value = ''; }
+ }
+ async function saveNote() {
+  if (!selected || !noteText.trim()) return;
+  try {
+   await request('/cases/' + selected + '/notes', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({body:noteText}) });
+   setNoteText('');
+   setModuleData(await request<any>('/cases/' + selected + '/notes'));
+  } catch(e) { setError(e instanceof Error ? e.message : 'Не удалось сохранить заметку'); }
  }
  async function askAI() {
   if (!selected || question.trim().length < 3) return;
