@@ -119,7 +119,7 @@ export default function App() {
    <div className="sidebar-bottom">
     <div className="integrity-card"><ShieldCheck size={17}/><div><b>Evidence-first</b><span>Каждый вывод должен иметь источник</span></div></div>
     <div className="api-indicator"><i className={apiState}/><span>API {apiState === 'online' ? 'подключён' : apiState === 'checking' ? 'проверка' : 'не подключён'}</span></div>
-    <span className="version">TRACE PLATFORM · MVP 0.1</span>
+    <span className="version">TRACE PLATFORM · PILOT FOUNDATION</span>
    </div>
   </aside>
   <main className="main-area">
@@ -134,7 +134,7 @@ export default function App() {
      <div className="case-strip"><div><span className="case-dot"/><b>{activeCase?.name || 'Загрузка исследования'}</b><small>ID: {selected.slice(0, 8)}</small></div><span>ЛОКАЛЬНОЕ ИССЛЕДОВАНИЕ</span></div>
      {tab === 'overview' && <>
       <div className="stats-grid">{stats.map(s => { const Icon = s.icon; return <div className="stat-card" key={s.label}><div className="stat-icon"><Icon size={17}/></div><span>{s.label}</span><strong>{s.value}</strong></div>; })}</div>
-      <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">01 / INGESTION</span><h2>Добавить материалы</h2><p>Оригиналы сохраняются отдельно. Для каждого файла рассчитывается SHA-256.</p></div><button className="secondary-button" onClick={() => fileRef.current?.click()} disabled={busy}><Upload size={16}/> Загрузить файлы</button></div><div className="drop-zone" onClick={() => fileRef.current?.click()} role="button" tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') fileRef.current?.click(); }}><div className="drop-icon"><Upload size={21}/></div><b>{busy ? 'Обработка материалов…' : 'Выберите материалы для исследования'}</b><span>TXT, MD, LOG, JSON, CSV, EML · до 20 МБ на файл</span></div><input ref={fileRef} hidden type="file" multiple accept=".txt,.md,.log,.json,.csv,.eml" onChange={e => void uploadFiles(e.target.files)}/></section>
+      <section className="panel"><div className="panel-heading"><div><span className="panel-kicker">01 / INGESTION</span><h2>Добавить материалы</h2><p>Оригиналы сохраняются отдельно. Для каждого файла рассчитывается SHA-256.</p></div><button className="secondary-button" onClick={() => fileRef.current?.click()} disabled={busy}><Upload size={16}/> Загрузить файлы</button></div><div className="drop-zone" onClick={() => fileRef.current?.click()} role="button" tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') fileRef.current?.click(); }}><div className="drop-icon"><Upload size={21}/></div><b>{busy ? 'Обработка материалов…' : 'Выберите материалы для исследования'}</b><span>Документы, изображения, аудио и видео · до 20 МБ на файл</span></div><input ref={fileRef} hidden type="file" multiple accept=".txt,.md,.log,.json,.csv,.eml,.jpg,.jpeg,.png,.webp,.mp3,.wav,.m4a,.mp4,.mov" onChange={e => void uploadFiles(e.target.files)}/></section>
       <section className="panel"><div className="panel-heading compact"><div><span className="panel-kicker">02 / EVIDENCE REGISTER</span><h2>Последние материалы</h2></div><button className="quiet-button" onClick={() => setTab('evidence')}>Все материалы <ArrowUpRight size={14}/></button></div><ArtifactTable artifacts={artifacts.slice(0, 5)}/></section>
       <section className="panel"><div className="panel-heading compact"><div><span className="panel-kicker">03 / CORRELATION ENGINE</span><h2>Совпадения между источниками</h2></div><button className="quiet-button" onClick={() => setTab('links')}>Открыть связи <ArrowUpRight size={14}/></button></div><LinkList links={analysis?.links.slice(0, 4) || []} names={names}/><p className="panel-footnote">Совпадение значения — основание для проверки, а не доказательство общей личности или принадлежности.</p></section>
      </>}
@@ -159,7 +159,7 @@ export default function App() {
       <aside className="panel ai-side"><span className="panel-kicker">EVIDENCE CONTEXT</span><h3>Контекст запроса</h3><div className="context-stat"><b>{artifacts.length}</b><span>материалов в исследовании</span></div><div className="context-stat"><b>{analysis?.links.length || 0}</b><span>точных совпадений</span></div><div className="context-rule"><ShieldCheck size={16}/><p>ИИ получает только извлечённые данные текущего исследования.</p></div><div className="context-rule"><AlertCircle size={16}/><p>Совпадение идентификатора не доказывает общую личность.</p></div></aside>
      </div>}
     </>}
-    <footer className="app-footer"><span>TRACE PLATFORM · RESEARCH PROTOTYPE</span><span>ДАННЫЕ ТЕКУЩЕГО ЛОКАЛЬНОГО ИССЛЕДОВАНИЯ</span></footer>
+    <footer className="app-footer"><span>TRACE PLATFORM · RESEARCH PROTOTYPE</span><span>ПРОВЕРЯЙТЕ ПЕРВОИСТОЧНИКИ И ПРОИСХОЖДЕНИЕ ДАННЫХ</span></footer>
    </div>
   </main>
  </div>;
