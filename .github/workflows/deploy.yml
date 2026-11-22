@@ -37,6 +37,21 @@ jobs:
           Path("/tmp/trace-demo.js").write_text("\\n".join(scripts), encoding="utf-8")
           PY
           node --check /tmp/trace-demo.js
+      - name: Validate synthetic GPX fixture
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          source = Path("platform-prototype/demo-site/samples/SYNTHETIC_DEMO_ROUTE.gpx")
+          root = ET.parse(source).getroot()
+          points = root.findall(".//{*}trkpt") + root.findall(".//{*}rtept") + root.findall(".//{*}wpt")
+          assert len(points) >= 2, "Synthetic GPX fixture must contain at least two points"
+          for point in points:
+              lat, lon = float(point.attrib["lat"]), float(point.attrib["lon"])
+              assert -90 <= lat <= 90 and -180 <= lon <= 180, "Invalid GPX coordinate"
+          name = root.findtext(".//{*}metadata/{*}name", default="")
+          assert "SYNTHETIC" in name.upper(), "Demo fixture must be clearly labeled synthetic"
+          PY
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
