@@ -17,6 +17,12 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(email["source_lines"], [2])
         self.assertFalse(any(e["type"] == "phone" and e["value"] == "192.0.2.44" for e in parsed.entities))
 
+    def test_media_original_is_classified_without_fake_transcription(self):
+        parsed = parse_artifact("recording.wav", b"synthetic binary placeholder")
+        self.assertEqual(parsed.metadata["media_category"], "audio")
+        self.assertEqual(parsed.metadata["analysis_status"], "original_preserved_not_transcribed")
+        self.assertEqual(parsed.text, "")
+
     def test_exact_match_links_sources_without_identity_claim(self):
         artifacts = [
             {"id": "a1", "filename": "one.txt", "entities": [{"type":"email","value":"x@y.org","normalized":"x@y.org"}]},
