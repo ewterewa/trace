@@ -8,10 +8,10 @@ type LinkItem = { entity_type: string; matched_value: string; artifact_ids: stri
 type Analysis = { artifact_count: number; entity_count: number; links: LinkItem[]; limitations: string[] };
 type Claim = { type: 'fact' | 'hypothesis' | 'question'; text: string; source_ids: string[]; confidence: 'low' | 'medium' | 'high' };
 type AIResult = { summary: string; claims: Claim[]; next_checks: string[]; model: string; notice: string };
-type Tab = 'overview' | 'evidence' | 'links' | 'timeline' | 'ai';
+type Tab = 'overview' | 'evidence' | 'links' | 'timeline' | 'graph' | 'audit' | 'notes' | 'ai';
 const tabs: { id: Tab; label: string; icon: typeof Activity }[] = [
  { id: 'overview', label: 'Обзор', icon: Activity }, { id: 'evidence', label: 'Материалы', icon: FolderOpen },
- { id: 'links', label: 'Связи', icon: Network }, { id: 'timeline', label: 'Хронология', icon: Clock3 },
+ { id: 'links', label: 'Связи', icon: Network }, { id: 'timeline', label: 'Хронология', icon: Clock3 }, { id: 'graph', label: 'Граф связей', icon: Network }, { id: 'notes', label: 'Заметки', icon: FileText }, { id: 'audit', label: 'Журнал', icon: ShieldCheck },
  { id: 'ai', label: 'TRACE AI', icon: Sparkles }
 ];
 
@@ -20,6 +20,8 @@ export default function App() {
  const [selected, setSelected] = useState('');
  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+ const [moduleData, setModuleData] = useState<any>(null);
+ const [noteText, setNoteText] = useState('');
  const [tab, setTab] = useState<Tab>('overview');
  const [apiState, setApiState] = useState('checking');
  const [busy, setBusy] = useState(false);
