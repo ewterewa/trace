@@ -202,9 +202,9 @@ function GeoMap({ tracks, notice, caseId }: { tracks: GeoTrack[]; notice: string
  const center = project(centerLat, centerLon);
  const firstTileX = Math.floor((worldSize / 2 + center.x - width / 2) / tileSize);
  const firstTileY = Math.floor((worldSize / 2 + center.y - height / 2) / tileSize);
- const tiles = [];
- for (let ty = firstTileY - 1; ty <= firstTileY + 5; ty++) {
-  for (let tx = firstTileX - 1; tx <= firstTileX + 5; tx++) {
+ const tiles: { key: string; url: string; x: number; y: number }[] = [];
+ for (let ty = firstTileY - 1; ty <= firstTileY + 2; ty++) {
+  for (let tx = firstTileX - 2; tx <= firstTileX + 2; tx++) {
    const count = Math.pow(2, zoom);
    if (ty < 0 || ty >= count) continue;
    const wrappedX = ((tx % count) + count) % count;
