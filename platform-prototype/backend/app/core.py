@@ -97,8 +97,14 @@ def parse_artifact(filename: str, data: bytes) -> ParsedArtifact:
     elif suffix in {".txt", ".md", ".log"}:
         text = data.decode("utf-8-sig", errors="replace")
         metadata["parser"] = "plain_text"
+    elif suffix in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".mp3", ".wav", ".m4a", ".ogg", ".mp4", ".mov"}:
+        text = ""
+        image_ext = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+        audio_ext = {".mp3", ".wav", ".m4a", ".ogg"}
+        category = "image" if suffix in image_ext else "audio" if suffix in audio_ext else "video"
+        metadata.update({"parser": "binary-media", "media_category": category, "analysis_status": "original_preserved_not_transcribed"})
     else:
-        raise ValueError("Unsupported file type. MVP supports TXT, MD, LOG, JSON, CSV and EML.")
+        raise ValueError("Unsupported file type. Supported text, structured documents and common media.")
     return ParsedArtifact(text=text, metadata=metadata, entities=_entities(text))
 
 def correlate(artifacts: list[dict[str, Any]]) -> dict[str, Any]:
