@@ -22,7 +22,7 @@ load_dotenv()
 DATA_DIR = Path(os.getenv("TRACE_DATA_DIR", "./data")).resolve()
 DB_PATH = DATA_DIR / "trace.sqlite3"
 MAX_UPLOAD = int(os.getenv("TRACE_MAX_UPLOAD_MB", "20")) * 1024 * 1024
-ALLOWED = {".txt", ".md", ".log", ".json", ".csv", ".eml"}
+ALLOWED = {".txt", ".md", ".log", ".json", ".csv", ".eml", ".jpg", ".jpeg", ".png", ".webp", ".gif", ".mp3", ".wav", ".m4a", ".ogg", ".mp4", ".mov"}
 
 app = FastAPI(title="TRACE Platform API", version="0.1.0",
               description="Evidence-first analytical workspace prototype")
