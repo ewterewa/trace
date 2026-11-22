@@ -1,0 +1,31 @@
+services:
+  trace-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      TRACE_DATA_DIR: /var/lib/trace
+      TRACE_MAX_UPLOAD_MB: ${TRACE_MAX_UPLOAD_MB:-20}
+      TRACE_AI_MODEL: ${TRACE_AI_MODEL:-gpt-4.1-mini}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      TRACE_AI_BASE_URL: ${TRACE_AI_BASE_URL:-}
+    volumes:
+      - trace-data:/var/lib/trace
+    ports:
+      - "127.0.0.1:8000:8000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  trace-data:
