@@ -214,8 +214,15 @@ function GeoMap({ tracks, notice, caseId }: { tracks: GeoTrack[]; notice: string
    tiles.push({ key: zoom + '-' + tx + '-' + ty, url: 'https://tile.openstreetmap.org/' + zoom + '/' + wrappedX + '/' + ty + '.png', x: tx * tileSize - (centerX - width / 2), y: ty * tileSize - (centerY - height / 2) });
   }
  }
+ const renderPoints = points.length > 5000
+  ? points.filter((_, index) => index % Math.ceil(points.length / 5000) === 0 || index === points.length - 1)
+  : points;
  const groups = new Map<number, GeoPoint[]>();
- points.forEach(point => groups.set(point.segment_index, [...(groups.get(point.segment_index) || []), point]));
+ renderPoints.forEach(point => {
+  const segmentPoints = groups.get(point.segment_index);
+  if (segmentPoints) segmentPoints.push(point);
+  else groups.set(point.segment_index, [point]);
+ });
  const formatTime = (value?: string) => value ? new Date(value).toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'medium', timeZone: 'UTC' }) + ' UTC' : 'Время в источнике не указано';
  useEffect(() => { setActiveId(tracks[0]?.id || ''); setZoomOffset(0); }, [tracks.map(t => t.id).join('|')]);
  if (!tracks.length) return <div className="geo-empty"><MapPin size={25}/><b>Геоданные пока не обнаружены</b><span>Загрузите GPX-файл с GPS-треком или маршрутными точками. Координаты из других форматов пока не извлекаются.</span><p>{notice}</p></div>;
@@ -229,7 +236,7 @@ function GeoMap({ tracks, notice, caseId }: { tracks: GeoTrack[]; notice: string
   </svg><div className="geo-zoom"><button onClick={() => setZoomOffset(v => Math.min(v+1, 8))} aria-label="Увеличить">+</button><button onClick={() => setZoomOffset(v => Math.max(v-1, -8))} aria-label="Уменьшить">−</button></div><div className="geo-legend"><span><i className="geo-start"/> Начало</span><span><i className="geo-end"/> Конец</span><span>Уровень масштаба {zoom}</span></div></div>
   <div className="geo-source"><div><span className="panel-kicker">ORIGINAL SOURCE</span><b>{active.filename}</b><small>{active.kind.toUpperCase()} · {points.length} координат · SHA-256 {active.sha256.slice(0,18)}…</small></div><a href={API+'/cases/'+caseId+'/artifacts/'+active.artifact_id+'/download'} target="_blank" rel="noreferrer">Открыть оригинал <ArrowUpRight size={13}/></a></div>
   <div className="geo-points"><div className="geo-points-head"><b>Реестр координат</b><span>Время показано в UTC, если оно присутствует в GPX</span></div><div className="table-wrap"><table><thead><tr><th>№</th><th>ШИРОТА</th><th>ДОЛГОТА</th><th>ВРЕМЯ ИЗ ИСТОЧНИКА</th><th>ВЫСОТА</th></tr></thead><tbody>{points.slice(0,500).map(point=><tr key={point.point_index+'-'+point.segment_index}><td>{point.point_index+1}</td><td className="hash-cell">{point.lat.toFixed(6)}</td><td className="hash-cell">{point.lon.toFixed(6)}</td><td>{formatTime(point.time)}</td><td>{point.ele ? point.ele+' m' : '—'}</td></tr>)}</tbody></table></div>{points.length>500 && <p className="panel-footnote">Показаны первые 500 точек. Полный исходный GPX доступен по ссылке выше.</p>}</div>
-  <p className="geo-notice"><ShieldCheck size={14}/>{notice}</p><p className="geo-attribution">Картографическая подложка: © OpenStreetMap contributors · координаты маршрута взяты из загруженного оригинала</p>
+  <p className="geo-notice"><ShieldCheck size={14}/>{notice}</p><p className="geo-attribution">Картографическая подложка: © OpenStreetMap contributors. При загрузке карты провайдер получает запросы тайлов для отображаемого района. Не используйте конфиденциальные координаты в этом пилоте.</p>
  </div>;
 }
 
