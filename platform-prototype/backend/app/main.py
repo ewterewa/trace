@@ -22,7 +22,7 @@ load_dotenv()
 DATA_DIR = Path(os.getenv("TRACE_DATA_DIR", "./data")).resolve()
 DB_PATH = DATA_DIR / "trace.sqlite3"
 MAX_UPLOAD = int(os.getenv("TRACE_MAX_UPLOAD_MB", "20")) * 1024 * 1024
-ALLOWED = {".txt", ".md", ".log", ".json", ".csv", ".eml", ".jpg", ".jpeg", ".png", ".webp", ".gif", ".mp3", ".wav", ".m4a", ".ogg", ".mp4", ".mov"}
+ALLOWED = {".txt", ".md", ".log", ".json", ".csv", ".eml", ".jpg", ".jpeg", ".png", ".webp", ".gif", ".mp3", ".wav", ".m4a", ".ogg", ".mp4", ".mov", ".gpx"}
 
 app = FastAPI(title="TRACE Platform API", version="0.1.0",
               description="Evidence-first analytical workspace prototype")
@@ -226,6 +226,31 @@ def case_timeline(case_id: str):
                         "classification": "date-mentioned-in-source", "precision": "as-written"
                     })
     return {"items": items, "notice": "Extracted date mentions are not verified event times. Review the cited source line before adding an event to the official chronology."}
+
+
+@app.get("/cases/{case_id}/geo")
+def case_geo(case_id: str):
+    """Return only coordinates extracted from original GPX evidence."""
+    get_case(case_id)
+    tracks = []
+    for artifact in get_artifacts(case_id):
+        metadata = artifact.get("metadata", {})
+        for index, track in enumerate(metadata.get("geo_tracks", []), 1):
+            tracks.append({
+                "id": f"{artifact['id']}:{index}",
+                "name": track.get("name") or f"Track {index}",
+                "kind": track.get("kind", "track"),
+                "artifact_id": artifact["id"],
+                "filename": artifact["filename"],
+                "sha256": artifact["sha256"],
+                "points": track.get("points", []),
+            })
+    return {
+        "tracks": tracks,
+        "point_count": sum(len(track["points"]) for track in tracks),
+        "notice": "Coordinates are extracted directly from uploaded GPX files. A plotted track does not independently verify who travelled, when, or why.",
+        "map_attribution": "© OpenStreetMap contributors",
+    }
 
 
 @app.get("/cases/{case_id}/graph")
