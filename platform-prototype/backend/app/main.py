@@ -38,6 +38,9 @@ app.add_middleware(
 class CaseCreate(BaseModel):
     name: str = Field(min_length=1, max_length=120)
 
+class NotePayload(BaseModel):
+    body: str = Field(min_length=1, max_length=12000)
+
 class AskRequest(BaseModel):
     question: str = Field(min_length=3, max_length=4000)
 
@@ -62,9 +65,25 @@ def init_db() -> None:
         );
         """)
 
+
+def init_enterprise_db() -> None:
+    with connect() as db:
+        db.executescript("""
+        CREATE TABLE IF NOT EXISTS audit_events (
+          id TEXT PRIMARY KEY, case_id TEXT NOT NULL, actor TEXT NOT NULL,
+          action TEXT NOT NULL, target_id TEXT, details_json TEXT NOT NULL,
+          created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS case_notes (
+          id TEXT PRIMARY KEY, case_id TEXT NOT NULL, body TEXT NOT NULL,
+          author TEXT NOT NULL, created_at TEXT NOT NULL
+        );
+        """)
+
 @app.on_event("startup")
 def startup() -> None:
     init_db()
+    init_enterprise_db()
 
 @app.get("/health")
 def health() -> dict[str, str]:
@@ -171,3 +190,80 @@ def ask(case_id: str, payload: AskRequest) -> dict[str, Any]:
         raise HTTPException(503, str(exc)) from exc
     except Exception as exc:
         raise HTTPException(502, f"AI provider error: {type(exc).__name__}") from exc
+
+
+@app.get("/cases/{case_id}/artifacts/{artifact_id}/download")
+def download_artifact(case_id: str, artifact_id: str):
+    from fastapi.responses import FileResponse
+    get_case(case_id)
+    with connect() as db:
+        row = db.execute("SELECT filename, storage_path FROM artifacts WHERE id=? AND case_id=?", (artifact_id, case_id)).fetchone()
+    if not row:
+        raise HTTPException(404, "Artifact not found")
+    path = Path(row["storage_path"]).resolve()
+    if not path.is_relative_to(DATA_DIR.resolve()) or not path.is_file():
+        raise HTTPException(404, "Original file unavailable")
+    return FileResponse(path, filename=row["filename"], media_type="application/octet-stream")
+
+
+@app.get("/cases/{case_id}/timeline")
+def case_timeline(case_id: str):
+    get_case(case_id)
+    items = []
+    for artifact in get_artifacts(case_id):
+        for entity in artifact.get("entities", []):
+            if entity.get("type") == "date":
+                for line in entity.get("source_lines", []):
+                    items.append({
+                        "date_text": entity["value"], "artifact_id": artifact["id"],
+                        "filename": artifact["filename"], "source_line": line,
+                        "classification": "date-mentioned-in-source", "precision": "as-written"
+                    })
+    return {"items": items, "notice": "Extracted date mentions are not verified event times. Review the cited source line before adding an event to the official chronology."}
+
+
+@app.get("/cases/{case_id}/graph")
+def case_graph(case_id: str):
+    get_case(case_id)
+    artifacts = get_artifacts(case_id)
+    nodes = {}
+    edges = []
+    for artifact in artifacts:
+        artifact_node = "artifact:" + artifact["id"]
+        nodes[artifact_node] = {"id": artifact_node, "type": "artifact", "label": artifact["filename"], "artifact_id": artifact["id"]}
+        for entity in artifact.get("entities", []):
+            key = entity["type"] + ":" + entity["normalized"]
+            nodes.setdefault(key, {"id": key, "type": entity["type"], "label": entity["value"]})
+            edges.append({
+                "source": key, "target": artifact_node, "relation": "mentioned_in",
+                "source_artifact_id": artifact["id"], "source_lines": entity.get("source_lines", []),
+                "confidence": "exact_extraction"
+            })
+    return {"nodes": list(nodes.values()), "edges": edges, "notice": "An edge means only that an extracted value occurs in a source. It does not prove identity, contact, causation or physical presence."}
+
+
+@app.get("/cases/{case_id}/audit")
+def case_audit(case_id: str):
+    get_case(case_id)
+    with connect() as db:
+        rows = db.execute("SELECT id, actor, action, target_id, details_json, created_at FROM audit_events WHERE case_id=? ORDER BY created_at DESC LIMIT 500", (case_id,)).fetchall()
+    return [{"id": row["id"], "actor": row["actor"], "action": row["action"], "target_id": row["target_id"], "details": json.loads(row["details_json"]), "created_at": row["created_at"]} for row in rows]
+
+
+@app.get("/cases/{case_id}/notes")
+def list_notes(case_id: str):
+    get_case(case_id)
+    with connect() as db:
+        rows = db.execute("SELECT id, body, author, created_at FROM case_notes WHERE case_id=? ORDER BY created_at DESC", (case_id,)).fetchall()
+    return [dict(row) for row in rows]
+
+
+@app.post("/cases/{case_id}/notes")
+def add_note(case_id: str, payload: NotePayload):
+    get_case(case_id)
+    note_id = str(uuid.uuid4())
+    created = datetime.now(timezone.utc).isoformat()
+    with connect() as db:
+        db.execute("INSERT INTO case_notes VALUES (?,?,?,?,?)", (note_id, case_id, payload.body, "local-operator", created))
+        db.execute("INSERT INTO audit_events VALUES (?,?,?,?,?,?,?)", (str(uuid.uuid4()), case_id, "local-operator", "note.created", note_id, json.dumps({"length": len(payload.body)}), created))
+    return {"id": note_id, "body": payload.body, "author": "local-operator", "created_at": created}
